@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="LororDB:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LororDB_jar</output-path>
+    <root id="root">
+      <element id="archive" name="LororDB.jar">
+        <element id="module-output" name="LororDB" />
+      </element>
+      <element id="library" level="project" name="mysql-connector-java-5.1.44" />
+    </root>
+  </artifact>
+</component>

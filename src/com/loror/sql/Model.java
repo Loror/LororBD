@@ -1,6 +1,7 @@
 package com.loror.sql;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class Model<T> implements Where {
@@ -179,6 +180,11 @@ public abstract class Model<T> implements Where {
      * 修改
      */
     public abstract void update(T entity, boolean ignoreNull);
+
+    /**
+     * 修改
+     */
+    public abstract void update(HashMap<String, Object> values);
 
     /**
      * 条件计数

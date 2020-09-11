@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MySQLModel<T> extends Model<T> {
@@ -104,6 +105,21 @@ public class MySQLModel<T> extends Model<T> {
         }
         try {
             sqlClient.getDatabase().getPst(TableFinder.getUpdateSqlNoWhere(entity, modelInfo, ignoreNull)
+                    + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
+                pst.execute();
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(HashMap<String, Object> values) {
+        if (values == null) {
+            return;
+        }
+        try {
+            sqlClient.getDatabase().getPst(TableFinder.getUpdateSqlNoWhere(values, modelInfo)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
                 pst.execute();
             });

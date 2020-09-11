@@ -123,6 +123,42 @@ public class TableFinder {
     }
 
     /**
+     * 获得更新语句
+     */
+    public static String getUpdateSqlNoWhere(HashMap<String, Object> values, ModelInfo modelInfo) {
+        HashMap<String, String> columns = new HashMap<>();
+        for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
+            Field field = columnInfo.getField();
+            field.setAccessible(true);
+            if (!columnInfo.isPrimaryKey()) {
+                if (!values.containsKey(columnInfo.getName())) {
+                    continue;
+                }
+                Object object = values.get(columnInfo.getName());
+                Column column = (Column) field.getAnnotation(Column.class);
+                columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, column));
+            }
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("update ")
+                .append(modelInfo.getSafeTableName())
+                .append(" set ");
+        for (String o : columns.keySet()) {
+            if (columns.get(o) == null) {
+                builder.append(o)
+                        .append(" = null,");
+            } else {
+                builder.append(o)
+                        .append(" = '")
+                        .append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append("',");
+            }
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        return builder.toString();
+    }
+
+    /**
      * 获得插入语句
      */
     public static String getInsertSql(Object entity, ModelInfo modelInfo) {
