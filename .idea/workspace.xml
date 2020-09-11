@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1hLsro2nPPFT0YaLlTHNc5Tcp4g" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/mysql-connector-java-5.1.44.jar!/" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator.PC-20170306PRLG\IdeaProjects\LororDB\src\com\loror\sql" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Test" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.loror.Test" />
+      <module name="LororDB" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="" />
+      <created>1599801907168</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599801907168</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599802364662">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599802364662" />
+    <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1599802346285">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599802346285" />
+    <state x="740" y="228" key="FileChooserDialogImpl" timestamp="1599802253661">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="228" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599802253661" />
+    <state width="1876" height="277" key="GridCell.Tab.0.bottom" timestamp="1599802409340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1599802409340" />
+    <state width="1876" height="277" key="GridCell.Tab.0.center" timestamp="1599802409340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="277" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1599802409340" />
+    <state width="1876" height="277" key="GridCell.Tab.0.left" timestamp="1599802409340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="277" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1599802409340" />
+    <state width="1876" height="277" key="GridCell.Tab.0.right" timestamp="1599802409340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="277" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1599802409340" />
+    <state x="440" y="96" key="SettingsEditor" timestamp="1599802255526">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="440" y="96" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1599802255526" />
+  </component>
+</project>
