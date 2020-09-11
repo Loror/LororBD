@@ -99,33 +99,37 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public void update(T entity, boolean ignoreNull) {
+    public int update(T entity, boolean ignoreNull) {
         if (entity == null) {
-            return;
+            return 0;
         }
+        int[] updates = new int[1];
         try {
             sqlClient.getDatabase().getPst(TableFinder.getUpdateSqlNoWhere(entity, modelInfo, ignoreNull)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
-                pst.execute();
+                updates[0] = pst.executeUpdate();
             });
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return updates[0];
     }
 
     @Override
-    public void update(HashMap<String, Object> values) {
+    public int update(HashMap<String, Object> values) {
         if (values == null) {
-            return;
+            return 0;
         }
+        int[] updates = new int[1];
         try {
             sqlClient.getDatabase().getPst(TableFinder.getUpdateSqlNoWhere(values, modelInfo)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
-                pst.execute();
+                updates[0] = pst.executeUpdate();
             });
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return updates[0];
     }
 
     @Override

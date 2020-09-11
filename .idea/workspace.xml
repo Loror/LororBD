@@ -7,11 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/LororDB_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Model.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/TableFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/TableFinder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -80,7 +77,14 @@
       <option name="project" value="LOCAL" />
       <updated>1599804143786</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="test">
+      <created>1599808582449</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1599808582449</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -96,10 +100,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599804567163" />
-    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1599804143361">
+    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1599808581775">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1599804143361" />
+    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1599808581775" />
     <state x="740" y="228" key="FileChooserDialogImpl" timestamp="1599802253661">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

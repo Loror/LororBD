@@ -179,12 +179,12 @@ public abstract class Model<T> implements Where {
     /**
      * 修改
      */
-    public abstract void update(T entity, boolean ignoreNull);
+    public abstract int update(T entity, boolean ignoreNull);
 
     /**
      * 修改
      */
-    public abstract void update(HashMap<String, Object> values);
+    public abstract int update(HashMap<String, Object> values);
 
     /**
      * 条件计数
