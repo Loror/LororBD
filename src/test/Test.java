@@ -1,4 +1,4 @@
-package com.loror;
+package test;
 
 import com.loror.sql.SQLClient;
 import com.loror.sql.mysql.MySQLClient;
@@ -18,10 +18,10 @@ public class Test {
 
         System.out.println(test);
 
-//        sqlClient.model(TestTable.class)
-//                .select("name", "random", "id")
-//                .where("id", "1")
-//                .first();
+        System.out.println(sqlClient.model(TestTable.class)
+                .select("name", "random", "id")
+                .where("id", "2")
+                .first());
 
 //        sqlClient.model(TestTable.class)
 //                .where("name", "name")

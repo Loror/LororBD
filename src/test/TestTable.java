@@ -1,4 +1,4 @@
-package com.loror;
+package test;
 
 import com.loror.sql.Column;
 import com.loror.sql.Id;
