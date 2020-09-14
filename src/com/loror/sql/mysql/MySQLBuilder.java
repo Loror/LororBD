@@ -129,23 +129,16 @@ public class MySQLBuilder {
     /**
      * 获得更新语句
      */
-    public static String getUpdateSqlNoWhere(Map<String, Object> values, ModelInfo modelInfo) {
+    public static String getUpdateSqlNoWhere(Map<String, Object> values, String table) {
         HashMap<String, String> columns = new HashMap<>();
-        for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
-            Field field = columnInfo.getField();
-            field.setAccessible(true);
-            if (!columnInfo.isPrimaryKey()) {
-                if (!values.containsKey(columnInfo.getName())) {
-                    continue;
-                }
-                Object object = values.get(columnInfo.getName());
-                columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
-            }
+        for (String key : values.keySet()) {
+            Object object = values.get(key);
+            columns.put("`" + key + "`", ColumnFilter.safeColumn(object));
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("update ")
-                .append(modelInfo.getSafeTableName())
-                .append(" set ");
+        builder.append("update `")
+                .append(table)
+                .append("` set ");
         for (String o : columns.keySet()) {
             if (columns.get(o) == null) {
                 builder.append(o)

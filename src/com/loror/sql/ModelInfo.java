@@ -3,19 +3,33 @@ package com.loror.sql;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ModelInfo {
 
     private Class<?> tableClass;
     private String tableName;
-    private boolean checkTable;
     private List<ColumnInfo> columnInfos = new ArrayList<>();
 
-    public ModelInfo(Class<?> tableClass) {
+    private static HashMap<Class<?>, ModelInfo> classModel = new HashMap<>();
+
+    private ModelInfo(Class<?> tableClass) {
         this.tableClass = tableClass;
         findTable(tableClass);
         findColumns(tableClass);
+    }
+
+    public static ModelInfo of(Class<?> table) {
+        if (table == null) {
+            return null;
+        }
+        ModelInfo model = classModel.get(table);
+        if (model == null) {
+            model = new ModelInfo(table);
+            classModel.put(table, model);
+        }
+        return model;
     }
 
     private void findTable(Class<?> tableClass) {
@@ -24,7 +38,6 @@ public class ModelInfo {
             throw new IllegalArgumentException("this class does not define table");
         }
         tableName = table.name();
-        checkTable = table.checkTable();
         if (tableName.length() == 0) {
             tableName = tableClass.getSimpleName();
         }
@@ -72,10 +85,6 @@ public class ModelInfo {
 
     public String getTableName() {
         return tableName;
-    }
-
-    public boolean isCheckTable() {
-        return checkTable;
     }
 
     public String getSafeTableName() {

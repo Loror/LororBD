@@ -50,14 +50,9 @@ public interface SQLClient {
     ModelInfo getModel(Class<?> table);
 
     /**
-     * 获取条件处理model，由注解确定是否检测table
+     * 获取条件处理model
      */
-    <T> Model<T> model(Class<T> table);
-
-    /**
-     * 获取条件处理model，用户确定是否检测table
-     */
-    <T> Model<T> model(Class<T> table, boolean checkTable);
+    Model model(String table);
 
     /**
      * 事务

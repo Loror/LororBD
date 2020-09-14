@@ -15,7 +15,6 @@ public class MySQLClient implements SQLClient {
     private MySQLDataBase mySQLDataBase;
     private List<Class<?>> execTableCreated = new LinkedList<>();//已执行过创建
     private List<Class<?>> execTableUpdated = new LinkedList<>();//已执行过更新表
-    private HashMap<Class<?>, ModelInfo> classModel = new HashMap<>();
     private OnClose onClose;//执行close方法时候调用，如果为空则执行关闭连接
 
     public MySQLClient(String url, String name, String password) {
@@ -76,15 +75,7 @@ public class MySQLClient implements SQLClient {
 
     @Override
     public ModelInfo getModel(Class<?> table) {
-        if (table == null) {
-            return null;
-        }
-        ModelInfo model = classModel.get(table);
-        if (model == null) {
-            model = new ModelInfo(table);
-            classModel.put(table, model);
-        }
-        return model;
+        return ModelInfo.of(table);
     }
 
     @Override
@@ -187,30 +178,8 @@ public class MySQLClient implements SQLClient {
     }
 
     @Override
-    public <T> Model<T> model(Class<T> table) {
-        ModelInfo model = getModel(table);
-        if (model.isCheckTable()) {
-            createTableIfNotExists(table);
-            try {
-                changeTableIfColumnAdd(table);
-            } catch (Exception e) {
-                System.err.println("SQLiteUtil:" + "changeTable failed:" + e);
-            }
-        }
-        return new MySQLModel<>(table, this, getModel(table));
-    }
-
-    @Override
-    public <T> Model<T> model(Class<T> table, boolean checkTable) {
-        if (checkTable) {
-            createTableIfNotExists(table);
-            try {
-                changeTableIfColumnAdd(table);
-            } catch (Exception e) {
-                System.err.println("SQLiteUtil:" + "changeTable failed:" + e);
-            }
-        }
-        return new MySQLModel<>(table, this, getModel(table));
+    public Model model(String table) {
+        return new MySQLModel(table, this);
     }
 
     @Override
@@ -366,13 +335,13 @@ public class MySQLClient implements SQLClient {
     protected <T> List<T> getAll(Class<T> table) {
         List<T> entitys = new ArrayList<>();
         try {
-            mySQLDataBase.getPst("select * from " + getModel(table).getSafeTableName(), false, pst -> {
+            ModelInfo modelInfo = getModel(table);
+            mySQLDataBase.getPst("select * from " + modelInfo.getSafeTableName(), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
-                ModelInfo modelInfo = getModel(table);
                 for (ModelResult modelResult : modelResults) {
-                    entitys.add(modelResult.toObject(modelInfo));
+                    entitys.add((T) modelResult.object(table));
                 }
             });
         } catch (SQLException e) {

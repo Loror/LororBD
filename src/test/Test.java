@@ -17,20 +17,28 @@ public class Test {
 //        test.random = (int) (Math.random() * 101);
 
 //        sqlClient.model(TestTable.class).truncate();
-//        HashMap<String, Object> values = new HashMap<>();
-//        values.put("name", "loror");
-//        sqlClient.model(TestTable.class)
-//                .where("id", 3)
-//                .update(values);
+        HashMap<String, Object> values = new HashMap<>();
+        values.put("name", "loror1");
+        sqlClient.model("test")
+                .where("id", 2)
+                .update(values);
 //
 //        System.out.println(test);
 
-        System.out.println(sqlClient.model(TestTable.class)
+        test = sqlClient.model("test")
                 .select("name", "random", "id")
                 .where(where -> {
                     where.where("id", 1)
                             .whereOr("id", 3);
                 })
+                .first()
+                .object(TestTable.class);
+
+        System.out.println(test);
+
+        System.out.println("id==>" + sqlClient.model("test")
+                .select("min(id) as min,max(id) as max")
+                .where("id", ">", 0)
                 .first());
 
 //        sqlClient.model(TestTable.class)
@@ -38,7 +46,7 @@ public class Test {
 //                .delete();
 //        sqlClient.close();
 
-        System.out.println(sqlClient.model(TestTable.class).count());
+        System.out.println(sqlClient.model("test").count());
         sqlClient.close();
     }
 }

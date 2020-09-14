@@ -12,22 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MySQLModel<T> extends Model<T> {
+public class MySQLModel extends Model {
 
     private MySQLClient sqlClient;
+    private String table;
     private String select = "*";
 
-    public MySQLModel(Class<T> table, MySQLClient sqlClient, ModelInfo modelInfo) {
-        super(table, modelInfo, ConditionBuilder.create());
+    public MySQLModel(String table, MySQLClient sqlClient) {
+        super(ConditionBuilder.create());
+        this.table = table;
         this.sqlClient = sqlClient;
     }
 
     @Override
-    public Model<T> select(String... columns) {
+    public Model select(String... columns) {
         if (columns != null && columns.length > 0) {
             String builder = "";
             for (String column : columns) {
-                builder += "`" + column + "`,";
+                builder += column + ",";
             }
             this.select = builder.substring(0, builder.length() - 1);
         }
@@ -35,9 +37,17 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public void save(T entity) {
+    public Model select(String columns) {
+        if (columns != null && columns.length() > 0) {
+            this.select = columns;
+        }
+        return this;
+    }
+
+    @Override
+    public void save(Object entity) {
         if (entity != null) {
-            ModelInfo.ColumnInfo idColumn = modelInfo.getId();
+            ModelInfo.ColumnInfo idColumn = ModelInfo.of(entity.getClass()).getId();
             if (idColumn == null) {
                 sqlClient.insert(entity);
             } else {
@@ -60,9 +70,9 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public boolean save(List<T> entities) {
+    public boolean save(List<?> entities) {
         return sqlClient.transaction(() -> {
-            for (T t : entities) {
+            for (Object t : entities) {
                 save(t);
             }
         });
@@ -72,7 +82,7 @@ public class MySQLModel<T> extends Model<T> {
     public void delete() {
         if (conditionBuilder.getConditionCount() > 0) {
             try {
-                sqlClient.getDatabase().getPst("delete from " + modelInfo.getSafeTableName() + conditionBuilder.getConditions(true), false, pst -> {
+                sqlClient.getDatabase().getPst("delete from `" + table + "`" + conditionBuilder.getConditions(true), false, pst -> {
                     pst.execute();
                 });
             } catch (SQLException e) {
@@ -83,14 +93,8 @@ public class MySQLModel<T> extends Model<T> {
 
     @Override
     public void clear() {
-        sqlClient.deleteAll(table);
-    }
-
-    @Override
-    public void truncate() {
-        sqlClient.deleteAll(table);
         try {
-            sqlClient.getDatabase().getPst("truncate table " + modelInfo.getSafeTableName() + conditionBuilder.getConditions(true), false, pst -> {
+            sqlClient.getDatabase().getPst("delete from `" + table + "`", false, pst -> {
                 pst.execute();
             });
         } catch (SQLException e) {
@@ -99,13 +103,24 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public int update(T entity, boolean ignoreNull) {
+    public void truncate() {
+        try {
+            sqlClient.getDatabase().getPst("truncate table `" + table + "`", false, pst -> {
+                pst.execute();
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int update(Object entity, boolean ignoreNull) {
         if (entity == null) {
             return 0;
         }
         int[] updates = new int[1];
         try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(entity, modelInfo, ignoreNull)
+            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(entity, ModelInfo.of(entity.getClass()), ignoreNull)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
                 updates[0] = pst.executeUpdate();
             });
@@ -122,7 +137,7 @@ public class MySQLModel<T> extends Model<T> {
         }
         int[] updates = new int[1];
         try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(values, modelInfo)
+            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(values, table)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
                 updates[0] = pst.executeUpdate();
             });
@@ -138,9 +153,9 @@ public class MySQLModel<T> extends Model<T> {
         try {
             String sql = null;
             if (conditionBuilder.getConditionCount() == 0) {
-                sql = "select count(1) from " + modelInfo.getSafeTableName();
+                sql = "select count(1) from `" + table + "`";
             } else {
-                sql = "select count(1) from " + modelInfo.getSafeTableName() + conditionBuilder.getConditionsWithoutPage(true);
+                sql = "select count(1) from `" + table + "`" + conditionBuilder.getConditionsWithoutPage(true);
             }
             sqlClient.getDatabase().getPst(sql, false, pst -> {
                 ResultSet cursor = pst.executeQuery();
@@ -160,16 +175,14 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public List<T> get() {
-        List<T> entitys = new ArrayList<>();
+    public List<ModelResult> get() {
+        List<ModelResult> entitys = new ArrayList<>();
         try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from " + modelInfo.getSafeTableName() + conditionBuilder.getConditions(true), false, pst -> {
+            sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`" + conditionBuilder.getConditions(true), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
-                for (ModelResult modelResult : modelResults) {
-                    entitys.add(modelResult.toObject(modelInfo));
-                }
+                entitys.addAll(modelResults);
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -178,28 +191,28 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public T first() {
-        Object[] entity = new Object[]{null};
+    public ModelResult first() {
+        ModelResult[] entity = new ModelResult[]{null};
         try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from " + modelInfo.getSafeTableName()
+            sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`"
                     + conditionBuilder.getConditionsWithoutPage(true) + " limit 0,1", false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
                 if (modelResults.size() > 0) {
-                    entity[0] = modelResults.get(0).toObject(modelInfo);
+                    entity[0] = modelResults.get(0);
                 }
             });
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return (T) entity[0];
+        return entity[0];
     }
 
     public int lastInsertId(Class<?> table) {
         int[] id = {-1};
         try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getLastIdSql(modelInfo), false, pst -> {
+            sqlClient.getDatabase().getPst(MySQLBuilder.getLastIdSql(ModelInfo.of(table)), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 if (cursor.next()) {
                     id[0] = cursor.getInt(1);

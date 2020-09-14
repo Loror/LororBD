@@ -4,7 +4,7 @@ import com.loror.sql.Column;
 import com.loror.sql.Id;
 import com.loror.sql.Table;
 
-@Table(name = "test", checkTable = true)
+@Table(name = "test")
 public class TestTable {
 
     @Id(length = 11, returnKey = true)
@@ -13,8 +13,8 @@ public class TestTable {
     public String name;
     @Column
     public String email;
-    @Column(defaultValue = "3")
-    public int random;
+    @Column(name = "random", defaultValue = "3")
+    public int count;
 
     @Override
     public String toString() {
@@ -22,7 +22,7 @@ public class TestTable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", random=" + random +
+                ", count=" + count +
                 '}';
     }
 }

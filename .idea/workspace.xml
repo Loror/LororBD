@@ -7,20 +7,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/loror/sql/ModelResult.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLResult.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Column.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Column.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/ColumnFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/ColumnFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Id.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Id.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Model.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/ModelInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/ModelInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/TableFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Where.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Where.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/ModelResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/ModelResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/SQLClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/SQLClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Table.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Table.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLResult.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/TestTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/TestTable.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,46 +99,58 @@
       <option name="project" value="LOCAL" />
       <updated>1599808854130</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="结构调整">
+      <created>1600051272058</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1600051272058</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="test" />
-    <option name="LAST_COMMIT_MESSAGE" value="test" />
+    <MESSAGE value="结构调整" />
+    <option name="LAST_COMMIT_MESSAGE" value="结构调整" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599804106526">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599804106526" />
+    <state x="717" y="225" key="#com.intellij.ide.util.MemberChooser" timestamp="1600052871149">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="717" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1600052871149" />
     <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1599804567163">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599804567163" />
-    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1599808853668">
+    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1600051270143">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1599808853668" />
+    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600051270143" />
     <state x="740" y="228" key="FileChooserDialogImpl" timestamp="1599802253661">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="228" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599802253661" />
-    <state width="1876" height="119" key="GridCell.Tab.0.bottom" timestamp="1600051043069">
+    <state width="1876" height="172" key="GridCell.Tab.0.bottom" timestamp="1600056874835">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="119" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600051043069" />
-    <state width="1876" height="119" key="GridCell.Tab.0.center" timestamp="1600051043069">
+    <state width="1876" height="172" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600056874835" />
+    <state width="1876" height="172" key="GridCell.Tab.0.center" timestamp="1600056874835">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="119" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600051043069" />
-    <state width="1876" height="119" key="GridCell.Tab.0.left" timestamp="1600051043069">
+    <state width="1876" height="172" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600056874835" />
+    <state width="1876" height="172" key="GridCell.Tab.0.left" timestamp="1600056874835">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="119" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600051043069" />
-    <state width="1876" height="119" key="GridCell.Tab.0.right" timestamp="1600051043069">
+    <state width="1876" height="172" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600056874835" />
+    <state width="1876" height="172" key="GridCell.Tab.0.right" timestamp="1600056874835">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="119" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600051043069" />
+    <state width="1876" height="172" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600056874835" />
     <state width="1876" height="342" key="GridCell.Tab.1.bottom" timestamp="1600048885736">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

@@ -3,117 +3,113 @@ package com.loror.sql;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Model<T> extends Where {
+public abstract class Model extends Where {
 
-    protected Class<T> table;
-    protected ModelInfo modelInfo;
-
-    public Model(Class<T> table, ModelInfo modelInfo, ConditionBuilder conditionBuilder) {
+    public Model(ConditionBuilder conditionBuilder) {
         super(conditionBuilder);
-        this.table = table;
-        this.modelInfo = modelInfo;
-    }
-
-    public ModelInfo getModelInfo() {
-        return modelInfo;
     }
 
     @Override
-    public Model<T> where(String key, Object var) {
+    public Model where(String key, Object var) {
         super.where(key, var);
         return this;
     }
 
     @Override
-    public Model<T> where(String key, String operation, Object var) {
+    public Model where(String key, String operation, Object var) {
         super.where(key, operation, var);
         return this;
     }
 
     @Override
-    public Model<T> whereOr(String key, Object var) {
+    public Model whereOr(String key, Object var) {
         super.whereOr(key, var);
         return this;
     }
 
     @Override
-    public Model<T> whereOr(String key, String operation, Object var) {
+    public Model whereOr(String key, String operation, Object var) {
         super.whereOr(key, operation, var);
         return this;
     }
 
     @Override
-    public Model<T> whereIn(String key, Object[] vars) {
+    public Model whereIn(String key, Object[] vars) {
         super.whereIn(key, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereIn(String key, String operation, Object[] vars) {
+    public Model whereIn(String key, String operation, Object[] vars) {
         super.whereIn(key, operation, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereIn(String key, List<?> vars) {
+    public Model whereIn(String key, List<?> vars) {
         super.whereIn(key, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereIn(String key, String operation, List<?> vars) {
+    public Model whereIn(String key, String operation, List<?> vars) {
         super.whereIn(key, operation, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereOrIn(String key, Object[] vars) {
+    public Model whereOrIn(String key, Object[] vars) {
         super.whereOrIn(key, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereOrIn(String key, String operation, Object[] vars) {
+    public Model whereOrIn(String key, String operation, Object[] vars) {
         super.whereOrIn(key, operation, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereOrIn(String key, List<?> vars) {
+    public Model whereOrIn(String key, List<?> vars) {
         super.whereOrIn(key, vars);
         return this;
     }
 
     @Override
-    public Model<T> whereOrIn(String key, String operation, List<?> vars) {
+    public Model whereOrIn(String key, String operation, List<?> vars) {
         super.whereOrIn(key, operation, vars);
         return this;
     }
 
     @Override
-    public Model<T> where(OnWhere onWhere) {
+    public Model where(OnWhere onWhere) {
         super.where(onWhere);
         return this;
     }
 
     @Override
-    public Model<T> whereOr(OnWhere onWhere) {
+    public Model whereOr(OnWhere onWhere) {
         super.whereOr(onWhere);
         return this;
     }
 
     @Override
-    public Model<T> when(boolean satisfy, OnWhere onWhere) {
+    public Model when(boolean satisfy, OnWhere onWhere) {
         super.when(satisfy, onWhere);
         return this;
     }
 
-    public Model<T> orderBy(String key, int order) {
+    public Model groupBy(String key, int order) {
+
+        return this;
+    }
+
+    public Model orderBy(String key, int order) {
         conditionBuilder.withOrder(key, order);
         return this;
     }
 
-    public Model<T> page(int page, int size) {
+    public Model page(int page, int size) {
         conditionBuilder.withPagination(page, size);
         return this;
     }
@@ -121,17 +117,22 @@ public abstract class Model<T> extends Where {
     /**
      * 指定字段查询
      */
-    public abstract Model<T> select(String... columns);
+    public abstract Model select(String... columns);
+
+    /**
+     * 指定字段查询
+     */
+    public abstract Model select(String column);
 
     /**
      * 保存
      */
-    public abstract void save(T entity);
+    public abstract void save(Object entity);
 
     /**
      * 保存
      */
-    public abstract boolean save(List<T> entities);
+    public abstract boolean save(List<?> entities);
 
     /**
      * 条件删除
@@ -151,7 +152,7 @@ public abstract class Model<T> extends Where {
     /**
      * 修改
      */
-    public abstract int update(T entity, boolean ignoreNull);
+    public abstract int update(Object entity, boolean ignoreNull);
 
     /**
      * 修改
@@ -166,11 +167,11 @@ public abstract class Model<T> extends Where {
     /**
      * 条件查询
      */
-    public abstract List<T> get();
+    public abstract List<ModelResult> get();
 
     /**
      * 条件查询首条
      */
-    public abstract T first();
+    public abstract ModelResult first();
 
 }

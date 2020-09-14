@@ -48,11 +48,16 @@ public class ModelResult {
         }
     }
 
-    public <T> T toObject(Class<T> type) {
+    public <T> T object(Class<T> type) {
         if (type == null) {
             return null;
         }
         T entity;
+
+        if (type.getAnnotation(Table.class) != null) {
+            return (T) object(ModelInfo.of(type));
+        }
+
         try {
             entity = (T) getObject(type);
         } catch (Exception e) {
@@ -93,13 +98,13 @@ public class ModelResult {
         return entity;
     }
 
-    public <T> T toObject(ModelInfo modelInfo) {
+    private Object object(ModelInfo modelInfo) {
         if (modelInfo == null) {
             return null;
         }
-        T entity;
+        Object entity;
         try {
-            entity = (T) modelInfo.getTableObject();
+            entity = modelInfo.getTableObject();
         } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalArgumentException(modelInfo.getTableName() + " have no non parametric constructor");
@@ -128,5 +133,10 @@ public class ModelResult {
             }
         }
         return entity;
+    }
+
+    @Override
+    public String toString() {
+        return data.toString();
     }
 }

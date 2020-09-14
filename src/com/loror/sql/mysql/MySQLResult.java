@@ -1,5 +1,6 @@
 package com.loror.sql.mysql;
 
+import com.loror.sql.ModelInfo;
 import com.loror.sql.ModelResult;
 
 import java.sql.ResultSet;
