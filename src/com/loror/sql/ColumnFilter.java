@@ -26,4 +26,14 @@ public class ColumnFilter {
         }
         return column.toString().replace("'", "''");
     }
+
+    /**
+     * 是否不需要添加`
+     */
+    public static boolean isFullName(String name) {
+        return name.contains("(")
+                || name.contains(",")
+                || name.contains("`")
+                || name.contains("'");
+    }
 }

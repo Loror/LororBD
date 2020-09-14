@@ -55,12 +55,12 @@ public class MySQLClient implements SQLClient {
     @Override
     public void close() {
         if (this.onClose != null) {
-            this.onClose.close(this);
+            this.onClose.close(mySQLDataBase);
         } else {
             if (this.mySQLDataBase != null) {
                 try {
                     this.mySQLDataBase.close();
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 this.mySQLDataBase = null;

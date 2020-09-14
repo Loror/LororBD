@@ -1,11 +1,11 @@
 package com.loror.sql;
 
-import com.loror.sql.mysql.MySQLClient;
+import java.io.Closeable;
 
-public interface SQLClient {
+public interface SQLClient extends Closeable {
 
     interface OnClose {
-        void close(MySQLClient mySqlClient);
+        void close(SQLDataBase dataBase);
     }
 
     /**

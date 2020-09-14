@@ -1,9 +1,6 @@
 package com.loror.sql.mysql;
 
-import com.loror.sql.ConditionBuilder;
-import com.loror.sql.Model;
-import com.loror.sql.ModelInfo;
-import com.loror.sql.ModelResult;
+import com.loror.sql.*;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -29,7 +26,7 @@ public class MySQLModel extends Model {
         if (columns != null && columns.length > 0) {
             String builder = "";
             for (String column : columns) {
-                builder += column + ",";
+                builder += "`" + column + "`,";
             }
             this.select = builder.substring(0, builder.length() - 1);
         }
@@ -39,7 +36,11 @@ public class MySQLModel extends Model {
     @Override
     public Model select(String columns) {
         if (columns != null && columns.length() > 0) {
-            this.select = columns;
+            if (ColumnFilter.isFullName(columns)) {
+                this.select = columns;
+            } else {
+                this.select = "`" + columns + "`";
+            }
         }
         return this;
     }
@@ -174,11 +175,16 @@ public class MySQLModel extends Model {
         return count[0];
     }
 
+    private String getGroup() {
+        return groupName == null ? "" : (" group by " + groupName + (having != null ? (" having (" + having + ")") : ""));
+    }
+
     @Override
     public List<ModelResult> get() {
         List<ModelResult> entitys = new ArrayList<>();
         try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`" + conditionBuilder.getConditions(true), false, pst -> {
+            sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`" + conditionBuilder.getConditionsWithoutPage(true)
+                    + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
@@ -195,7 +201,7 @@ public class MySQLModel extends Model {
         ModelResult[] entity = new ModelResult[]{null};
         try {
             sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`"
-                    + conditionBuilder.getConditionsWithoutPage(true) + " limit 0,1", false, pst -> {
+                    + conditionBuilder.getConditionsWithoutPage(true) + getGroup() + " limit 0,1", false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();

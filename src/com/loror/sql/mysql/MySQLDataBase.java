@@ -1,13 +1,15 @@
 package com.loror.sql.mysql;
 
+import com.loror.sql.SQLDataBase;
 import com.mysql.jdbc.Statement;
 
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-class MySQLDataBase {
+class MySQLDataBase implements SQLDataBase {
 
     public interface OnGetPst {
         void getPst(PreparedStatement pst) throws SQLException;

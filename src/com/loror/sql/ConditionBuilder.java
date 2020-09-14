@@ -37,6 +37,10 @@ public class ConditionBuilder {
         return orders;
     }
 
+    public Page getPage() {
+        return page;
+    }
+
     public boolean isHasNull() {
         return hasNull;
     }

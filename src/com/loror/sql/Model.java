@@ -5,6 +5,9 @@ import java.util.Map;
 
 public abstract class Model extends Where {
 
+    protected String groupName;
+    protected String having;
+
     public Model(ConditionBuilder conditionBuilder) {
         super(conditionBuilder);
     }
@@ -99,8 +102,28 @@ public abstract class Model extends Where {
         return this;
     }
 
-    public Model groupBy(String key, int order) {
+    public Model groupBy(String key) {
+        if (key != null && key.length() > 0) {
+            this.groupName = ColumnFilter.isFullName(key) ?
+                    key
+                    : ("`" + key + "`");
+        }
+        return this;
+    }
 
+    public Model having(String key, Object var) {
+        return having(key, var == null ? "is" : "=", var);
+    }
+
+    public Model having(String key, String operation, Object var) {
+        if (!ColumnFilter.isFullName(key)) {
+            key = "`" + key + "`";
+        }
+        if (this.having == null) {
+            this.having = key + " " + operation + " " + var;
+        } else {
+            this.having += "," + key + " " + operation + " " + var;
+        }
         return this;
     }
 
@@ -110,6 +133,12 @@ public abstract class Model extends Where {
     }
 
     public Model page(int page, int size) {
+        if (page <= 0) {
+            throw new IllegalArgumentException("page cannot be zero or minus");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("size cannot be zero or minus");
+        }
         conditionBuilder.withPagination(page, size);
         return this;
     }

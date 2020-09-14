@@ -15,6 +15,8 @@ public class TestTable {
     public String email;
     @Column(name = "random", defaultValue = "3")
     public int count;
+    @Column(length = 1, defaultValue = "0")
+    public int group;
 
     @Override
     public String toString() {
@@ -23,6 +25,7 @@ public class TestTable {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", count=" + count +
+                ", group=" + group +
                 '}';
     }
 }
