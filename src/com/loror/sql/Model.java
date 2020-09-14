@@ -1,19 +1,17 @@
 package com.loror.sql;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public abstract class Model<T> implements Where {
+public abstract class Model<T> extends Where {
 
     protected Class<T> table;
     protected ModelInfo modelInfo;
-    protected ConditionBuilder conditionBuilder;
 
     public Model(Class<T> table, ModelInfo modelInfo, ConditionBuilder conditionBuilder) {
+        super(conditionBuilder);
         this.table = table;
         this.modelInfo = modelInfo;
-        this.conditionBuilder = conditionBuilder;
     }
 
     public ModelInfo getModelInfo() {
@@ -22,115 +20,91 @@ public abstract class Model<T> implements Where {
 
     @Override
     public Model<T> where(String key, Object var) {
-        return where(key, var == null ? "is" : "=", var);
+        super.where(key, var);
+        return this;
     }
 
     @Override
     public Model<T> where(String key, String operation, Object var) {
-        conditionBuilder.addCondition(key, operation, var);
+        super.where(key, operation, var);
         return this;
     }
 
     @Override
     public Model<T> whereOr(String key, Object var) {
-        return whereOr(key, var == null ? "is" : "=", var);
+        super.whereOr(key, var);
+        return this;
     }
 
     @Override
     public Model<T> whereOr(String key, String operation, Object var) {
-        conditionBuilder.addOrCondition(key, operation, var);
+        super.whereOr(key, operation, var);
         return this;
     }
 
     @Override
     public Model<T> whereIn(String key, Object[] vars) {
-        return whereIn(key, "in", vars);
+        super.whereIn(key, vars);
+        return this;
     }
 
     @Override
     public Model<T> whereIn(String key, String operation, Object[] vars) {
-        if (vars == null || vars.length == 0) {
-            return this;
-        }
-        return whereIn(key, operation, Arrays.asList(vars));
+        super.whereIn(key, operation, vars);
+        return this;
     }
 
     @Override
     public Model<T> whereIn(String key, List<?> vars) {
-        return whereIn(key, "in", vars);
+        super.whereIn(key, vars);
+        return this;
     }
 
     @Override
     public Model<T> whereIn(String key, String operation, List<?> vars) {
-        if (vars == null || vars.size() == 0) {
-            throw new IllegalArgumentException("in condition can not be empty");
-        }
-        conditionBuilder.addInCondition(key, operation, vars);
+        super.whereIn(key, operation, vars);
         return this;
     }
 
     @Override
     public Model<T> whereOrIn(String key, Object[] vars) {
-        return whereOrIn(key, "in", vars);
+        super.whereOrIn(key, vars);
+        return this;
     }
 
     @Override
     public Model<T> whereOrIn(String key, String operation, Object[] vars) {
-        if (vars == null || vars.length == 0) {
-            return this;
-        }
-        return whereOrIn(key, operation, Arrays.asList(vars));
+        super.whereOrIn(key, operation, vars);
+        return this;
     }
 
     @Override
     public Model<T> whereOrIn(String key, List<?> vars) {
-        return whereOrIn(key, "in", vars);
+        super.whereOrIn(key, vars);
+        return this;
     }
 
     @Override
     public Model<T> whereOrIn(String key, String operation, List<?> vars) {
-        if (vars == null || vars.size() == 0) {
-            throw new IllegalArgumentException("in condition can not be empty");
-        }
-        conditionBuilder.addOrInCondition(key, operation, vars);
+        super.whereOrIn(key, operation, vars);
         return this;
     }
 
     @Override
     public Model<T> where(OnWhere onWhere) {
-        return where(onWhere, 0);
+        super.where(onWhere);
+        return this;
     }
 
     @Override
     public Model<T> whereOr(OnWhere onWhere) {
-        return where(onWhere, 1);
-    }
-
-    private Model<T> where(OnWhere onWhere, int type) {
-        if (onWhere != null) {
-            Model<T> model = newModel();
-            onWhere.where(model);
-            List<Condition> conditions = model.conditionBuilder.getConditionList();
-            if (conditions.size() > 0) {
-                Condition top = conditions.get(0);
-                top.setType(type);
-                for (Condition condition : conditions) {
-                    if (condition == top) {
-                        continue;
-                    }
-                    top.addCondition(condition);
-                }
-                conditionBuilder.addCondition(top, model.conditionBuilder.isHasNull());
-            }
-        }
+        super.whereOr(onWhere);
         return this;
     }
 
     @Override
     public Model<T> when(boolean satisfy, OnWhere onWhere) {
-        if (satisfy && onWhere != null) {
-            onWhere.where(this);
-        }
+        super.when(satisfy, onWhere);
         return this;
     }
 
@@ -143,8 +117,6 @@ public abstract class Model<T> implements Where {
         conditionBuilder.withPagination(page, size);
         return this;
     }
-
-    protected abstract Model<T> newModel();
 
     /**
      * 指定字段查询
@@ -184,7 +156,7 @@ public abstract class Model<T> implements Where {
     /**
      * 修改
      */
-    public abstract int update(HashMap<String, Object> values);
+    public abstract int update(Map<String, Object> values);
 
     /**
      * 条件计数
@@ -201,8 +173,4 @@ public abstract class Model<T> implements Where {
      */
     public abstract T first();
 
-    @Override
-    public String toString() {
-        return conditionBuilder.toString();
-    }
 }

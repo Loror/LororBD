@@ -11,6 +11,10 @@ public @interface Column {
 
     String name() default "";
 
+    int length() default 0;
+
+    int scale() default 0;
+
     String defaultValue() default "";
 
     boolean notNull() default false;

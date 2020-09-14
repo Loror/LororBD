@@ -1,10 +1,13 @@
-package com.loror.sql;
+package com.loror.sql.mysql;
+
+import com.loror.sql.ColumnFilter;
+import com.loror.sql.ModelInfo;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.Map;
 
-public class TableFinder {
+public class MySQLBuilder {
 
     /**
      * 获得创建语句
@@ -18,7 +21,9 @@ public class TableFinder {
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             if (columnInfo.isPrimaryKey()) {
                 builder.append(columnInfo.getSafeName())
-                        .append(" int NOT NULL AUTO_INCREMENT,");
+                        .append(" ")
+                        .append(columnInfo.getType())
+                        .append(" NOT NULL AUTO_INCREMENT,");
                 primary = columnInfo.getSafeName();
             } else {
                 builder.append(columnInfo.getSafeName())
@@ -96,8 +101,7 @@ public class TableFinder {
                     if (ignoreNull && object == null) {
                         continue;
                     }
-                    Column column = (Column) field.getAnnotation(Column.class);
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, column));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -125,7 +129,7 @@ public class TableFinder {
     /**
      * 获得更新语句
      */
-    public static String getUpdateSqlNoWhere(HashMap<String, Object> values, ModelInfo modelInfo) {
+    public static String getUpdateSqlNoWhere(Map<String, Object> values, ModelInfo modelInfo) {
         HashMap<String, String> columns = new HashMap<>();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
@@ -135,8 +139,7 @@ public class TableFinder {
                     continue;
                 }
                 Object object = values.get(columnInfo.getName());
-                Column column = (Column) field.getAnnotation(Column.class);
-                columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, column));
+                columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
             }
         }
         StringBuilder builder = new StringBuilder();
@@ -176,8 +179,7 @@ public class TableFinder {
                         }
                     }
                 } else {
-                    Column column = (Column) field.getAnnotation(Column.class);
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, column));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -214,8 +216,7 @@ public class TableFinder {
                 if (columnInfo.isPrimaryKey()) {
                     columns.put(columnInfo.getSafeName(), String.valueOf(object));
                 } else {
-                    Column column = (Column) field.getAnnotation(Column.class);
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, column));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -237,82 +238,6 @@ public class TableFinder {
             }
         }
         return builder.toString().substring(0, builder.toString().length() - 5);
-    }
-
-    /**
-     * 查询sql数据到对象中
-     */
-    public static void find(Object entity, ResultSet cursor) {
-        Class<?> handlerType = entity.getClass();
-        Field[] fields = handlerType.getDeclaredFields();
-        if (fields == null || fields.length == 0) {
-            return;
-        }
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            field.setAccessible(true);
-            try {
-                Column column = (Column) field.getAnnotation(Column.class);
-                if (column != null) {
-                    String columnName = column.name();
-                    if (columnName.length() == 0) {
-                        columnName = field.getName();
-                    }
-                    Class<?> type = field.getType();
-                    int index;
-                    try {
-                        index = cursor.findColumn(columnName);
-                    } catch (Exception e) {
-                        index = -1;
-                    }
-                    if (index <= 0) {
-                        continue;
-                    }
-                    String result = cursor.getString(index);
-                    result = ColumnFilter.decodeColumn(result, column);
-                    if (result != null) {
-                        if (type == int.class || type == Integer.class) {
-                            field.set(entity, Integer.parseInt(result));
-                        } else if (type == long.class || type == Long.class) {
-                            field.set(entity, Long.parseLong(result));
-                        } else if (type == float.class || type == Float.class) {
-                            field.set(entity, Float.parseFloat(result));
-                        } else if (type == double.class || type == Double.class) {
-                            field.set(entity, Double.parseDouble(result));
-                        } else if (type == String.class) {
-                            field.set(entity, result);
-                        }
-                    }
-                } else {
-                    Id id = (Id) field.getAnnotation(Id.class);
-                    if (id != null) {
-                        String name = id.name();
-                        if (name.length() == 0) {
-                            name = "id";
-                        }
-                        int index;
-                        try {
-                            index = cursor.findColumn(name);
-                        } catch (Exception e) {
-                            index = -1;
-                        }
-                        if (index <= 0) {
-                            continue;
-                        }
-                        String result = cursor.getString(index);
-                        Class<?> type = field.getType();
-                        if (type == int.class || type == Integer.class) {
-                            field.set(entity, Integer.parseInt(result));
-                        } else {
-                            field.set(entity, Long.parseLong(result));
-                        }
-
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }

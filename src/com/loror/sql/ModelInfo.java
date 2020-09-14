@@ -46,7 +46,8 @@ public class ModelInfo {
                 if (columnName.length() == 0) {
                     columnName = field.getName();
                 }
-                columnInfos.add(new ColumnInfo(false, false, field, columnName));
+                columnInfos.add(new ColumnInfo(false, false, field,
+                        columnName, column.length(), column.scale(), column.defaultValue(), column.notNull()));
             } else {
                 Id id = (Id) field.getAnnotation(Id.class);
                 if (id != null) {
@@ -55,7 +56,8 @@ public class ModelInfo {
                     }
                     findPrimaryKey = true;
                     String idName = id.name();
-                    columnInfos.add(new ColumnInfo(true, id.returnKey(), field, idName.length() == 0 ? "id" : idName));
+                    columnInfos.add(new ColumnInfo(true, id.returnKey(), field,
+                            idName.length() == 0 ? "id" : idName, id.length(), 0, null, true));
                 }
             }
         }
@@ -112,14 +114,22 @@ public class ModelInfo {
         private Class<?> typeClass;
         private String type;
         private String name;
+        private int length;
+        private int scale;
+        private String defaultValue;
+        private boolean notNull;
         private Field field;
 
-        public ColumnInfo(boolean primaryKey, boolean returnKey, Field field, String name) {
+        public ColumnInfo(boolean primaryKey, boolean returnKey, Field field, String name, int length, int scale, String defaultValue, boolean notNull) {
             this.primaryKey = primaryKey;
             this.returnKey = returnKey;
             this.field = field;
             this.typeClass = field.getType();
             this.name = name;
+            this.length = length;
+            this.scale = scale;
+            this.defaultValue = "".equals(defaultValue) ? null : defaultValue;
+            this.notNull = notNull;
             if (primaryKey) {
                 if (typeClass != int.class && typeClass != long.class &&
                         typeClass != Integer.class && typeClass != Long.class) {
@@ -134,14 +144,15 @@ public class ModelInfo {
 
         private String typeByClass() {
             String type = null;
+            String max = length == 0 ? "" : ("(" + length + ")");
             if (typeClass == int.class || typeClass == long.class || typeClass == Integer.class || typeClass == Long.class) {
-                type = "int";
+                type = "int" + (max.length() == 0 ? "" : max);
             } else if (typeClass == float.class || typeClass == Float.class) {
-                type = "float";
+                type = "float" + (max.length() == 0 ? "" : max.replace(")", ("," + scale + ")")));
             } else if (typeClass == double.class || typeClass == Double.class) {
-                type = "double";
+                type = "double" + (max.length() == 0 ? "" : max.replace(")", ("," + scale + ")")));
             } else if (typeClass == String.class) {
-                type = "varchar(255)";
+                type = "varchar" + (max.length() == 0 ? "(255)" : max);
             }
             return type;
         }
@@ -168,6 +179,18 @@ public class ModelInfo {
 
         public String getSafeName() {
             return "`" + name + "`";
+        }
+
+        public int getLength() {
+            return length;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public boolean isNotNull() {
+            return notNull;
         }
 
         public String getType() {

@@ -3,14 +3,14 @@ package com.loror.sql.mysql;
 import com.loror.sql.ConditionBuilder;
 import com.loror.sql.Model;
 import com.loror.sql.ModelInfo;
-import com.loror.sql.TableFinder;
+import com.loror.sql.ModelResult;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MySQLModel<T> extends Model<T> {
 
@@ -105,7 +105,7 @@ public class MySQLModel<T> extends Model<T> {
         }
         int[] updates = new int[1];
         try {
-            sqlClient.getDatabase().getPst(TableFinder.getUpdateSqlNoWhere(entity, modelInfo, ignoreNull)
+            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(entity, modelInfo, ignoreNull)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
                 updates[0] = pst.executeUpdate();
             });
@@ -116,13 +116,13 @@ public class MySQLModel<T> extends Model<T> {
     }
 
     @Override
-    public int update(HashMap<String, Object> values) {
+    public int update(Map<String, Object> values) {
         if (values == null) {
             return 0;
         }
         int[] updates = new int[1];
         try {
-            sqlClient.getDatabase().getPst(TableFinder.getUpdateSqlNoWhere(values, modelInfo)
+            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(values, modelInfo)
                     + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
                 updates[0] = pst.executeUpdate();
             });
@@ -165,20 +165,11 @@ public class MySQLModel<T> extends Model<T> {
         try {
             sqlClient.getDatabase().getPst("select " + this.select + " from " + modelInfo.getSafeTableName() + conditionBuilder.getConditions(true), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
-                while (cursor.next()) {
-                    T entity = null;
-                    try {
-                        entity = (T) modelInfo.getTableObject();
-                        TableFinder.find(entity, cursor);
-                        entitys.add(entity);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (entity == null) {
-                            throw new IllegalArgumentException(table.getSimpleName() + " have no non parametric constructor");
-                        }
-                    }
-                }
+                List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
+                for (ModelResult modelResult : modelResults) {
+                    entitys.add(modelResult.toObject(modelInfo));
+                }
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -191,20 +182,13 @@ public class MySQLModel<T> extends Model<T> {
         Object[] entity = new Object[]{null};
         try {
             sqlClient.getDatabase().getPst("select " + this.select + " from " + modelInfo.getSafeTableName()
-                    + conditionBuilder.getConditionsWithoutPage(true) + " limit 0,2", false, pst -> {
+                    + conditionBuilder.getConditionsWithoutPage(true) + " limit 0,1", false, pst -> {
                 ResultSet cursor = pst.executeQuery();
-                if (cursor.next()) {
-                    try {
-                        entity[0] = modelInfo.getTableObject();
-                        TableFinder.find(entity[0], cursor);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (entity[0] == null) {
-                            throw new IllegalArgumentException(table.getSimpleName() + " have no non parametric constructor");
-                        }
-                    }
-                }
+                List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
+                if (modelResults.size() > 0) {
+                    entity[0] = modelResults.get(0).toObject(modelInfo);
+                }
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -215,7 +199,7 @@ public class MySQLModel<T> extends Model<T> {
     public int lastInsertId(Class<?> table) {
         int[] id = {-1};
         try {
-            sqlClient.getDatabase().getPst(TableFinder.getLastIdSql(modelInfo), false, pst -> {
+            sqlClient.getDatabase().getPst(MySQLBuilder.getLastIdSql(modelInfo), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 if (cursor.next()) {
                     id[0] = cursor.getInt(1);
@@ -226,10 +210,5 @@ public class MySQLModel<T> extends Model<T> {
             e.printStackTrace();
         }
         return id[0];
-    }
-
-    @Override
-    protected Model<T> newModel() {
-        return new MySQLModel<T>(table, sqlClient, modelInfo);
     }
 }

@@ -94,7 +94,7 @@ public class MySQLClient implements SQLClient {
         }
         execTableCreated.add(table);
         try {
-            mySQLDataBase.getPst(TableFinder.getCreateSql(getModel(table)), false, pst -> {
+            mySQLDataBase.getPst(MySQLBuilder.getCreateSql(getModel(table)), false, pst -> {
                 pst.execute();
             });
         } catch (SQLException e) {
@@ -105,7 +105,7 @@ public class MySQLClient implements SQLClient {
     @Override
     public void dropTable(Class<?> table) {
         try {
-            mySQLDataBase.getPst(TableFinder.getDropTableSql(getModel(table)), false, pst -> {
+            mySQLDataBase.getPst(MySQLBuilder.getDropTableSql(getModel(table)), false, pst -> {
                 pst.execute();
             });
             execTableCreated.remove(table);
@@ -121,34 +121,24 @@ public class MySQLClient implements SQLClient {
         }
         execTableUpdated.add(table);
         try {
-            mySQLDataBase.getPst("select * from " + getModel(table).getSafeTableName() + " limit 1", false, preparedStatement -> {
+            ModelInfo modelInfo = getModel(table);
+            mySQLDataBase.getPst("select * from " + modelInfo.getSafeTableName() + " limit 1", false, preparedStatement -> {
                 ResultSet cursor = preparedStatement.executeQuery();
-                if (cursor == null) {
-                    return;
-                }
-
                 List<String> columnNames = new ArrayList<>();
                 ResultSetMetaData data = cursor.getMetaData();
                 for (int i = 0; i < data.getColumnCount(); i++) {
                     columnNames.add(data.getColumnName(i + 1));
                 }
                 cursor.close();
-                preparedStatement.close();
-
                 String idName = null;
                 List<String> newColumnNames = new ArrayList<>();
-                HashMap<String, Class<?>> objectHashMap = new HashMap<>();
-                HashMap<String, Column> columnHashMap = new HashMap<>();
-                ModelInfo modelInfo = getModel(table);
+                HashMap<String, ModelInfo.ColumnInfo> columnHashMap = new HashMap<>();
                 for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
-                    Field field = columnInfo.getField();
                     if (columnInfo.isPrimaryKey()) {
                         idName = columnInfo.getName();
                     } else {
-                        Column column = field.getAnnotation(Column.class);
                         newColumnNames.add(columnInfo.getName());
-                        columnHashMap.put(columnInfo.getName(), column);
-                        objectHashMap.put(columnInfo.getName(), field.getType());
+                        columnHashMap.put(columnInfo.getName(), columnInfo);
                     }
                 }
 
@@ -176,30 +166,16 @@ public class MySQLClient implements SQLClient {
                 }
                 for (i = 0; i < newColumnNames.size(); i++) {
                     String newColumnName = newColumnNames.get(i);
-                    String type = "varchar(255)";
-                    Class<?> objectType = objectHashMap.get(newColumnName);
-                    if (objectType == Integer.class || objectType == int.class || objectType == Long.class || objectType == long.class) {
-                        type = "int";
-                    } else if (objectType == Float.class || objectType == float.class) {
-                        type = "float";
-                    } else if (objectType == Double.class || objectType == double.class) {
-                        type = "double";
-                    } else if (objectType == String.class) {
-                        type = "varchar(255)";
-                    } else {
-                        throw new IllegalArgumentException("unsupported column type " + (objectType == null ? null : objectType.getSimpleName()) + " :" + newColumnNames.get(i));
-                    }
-                    Column column = columnHashMap.get(newColumnName);
-                    String defaultValue = column.defaultValue();
-                    defaultValue = ColumnFilter.getColumn(newColumnName, defaultValue, column);
-                    String finalDefaultValue = defaultValue;
+                    ModelInfo.ColumnInfo columnInfo = columnHashMap.get(newColumnName);
+                    String type = columnInfo.getType();
+                    String defaultValue = columnInfo.getDefaultValue();
                     mySQLDataBase.getPst("alter table " + modelInfo.getSafeTableName() + " add column `" + newColumnName + "` " + type, false, new MySQLDataBase.OnGetPst() {
                         @Override
                         public void getPst(PreparedStatement pst) throws SQLException {
                             pst.execute();
-                            if (finalDefaultValue != null && finalDefaultValue.length() > 0) {
+                            if (defaultValue != null && defaultValue.length() > 0) {
                                 pst.execute("update " + modelInfo.getSafeTableName() + " set `" + newColumnName +
-                                        "` = '" + ColumnFilter.safeColumn(finalDefaultValue) + "'");
+                                        "` = '" + ColumnFilter.safeColumn(defaultValue) + "'");
                             }
                         }
                     });
@@ -290,7 +266,7 @@ public class MySQLClient implements SQLClient {
             ModelInfo modelInfo = getModel(entity.getClass());
             ModelInfo.ColumnInfo id = modelInfo.getId();
             boolean returnId = id != null && id.isReturnKey();
-            mySQLDataBase.getPst(TableFinder.getInsertSql(entity, modelInfo), returnId, pst -> {
+            mySQLDataBase.getPst(MySQLBuilder.getInsertSql(entity, modelInfo), returnId, pst -> {
                 pst.execute();
                 if (returnId) {
                     // 在执行更新后获取自增长列
@@ -334,7 +310,7 @@ public class MySQLClient implements SQLClient {
             return;
         }
         try {
-            mySQLDataBase.getPst(TableFinder.getUpdateSql(entity, getModel(entity.getClass())), false, pst -> {
+            mySQLDataBase.getPst(MySQLBuilder.getUpdateSql(entity, getModel(entity.getClass())), false, pst -> {
                 pst.execute();
             });
         } catch (SQLException e) {
@@ -350,7 +326,7 @@ public class MySQLClient implements SQLClient {
             return;
         }
         try {
-            mySQLDataBase.getPst(TableFinder.getDeleteSql(entity, getModel(entity.getClass())), false, pst -> {
+            mySQLDataBase.getPst(MySQLBuilder.getDeleteSql(entity, getModel(entity.getClass())), false, pst -> {
                 pst.execute();
             });
         } catch (SQLException e) {
@@ -392,20 +368,12 @@ public class MySQLClient implements SQLClient {
         try {
             mySQLDataBase.getPst("select * from " + getModel(table).getSafeTableName(), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
-                while (cursor.next()) {
-                    T entity = null;
-                    try {
-                        entity = (T) getModel(table).getTableObject();
-                        entitys.add(entity);
-                        TableFinder.find(entity, cursor);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (entity == null) {
-                            throw new IllegalArgumentException(table.getSimpleName() + " have no non parametric constructor");
-                        }
-                    }
-                }
+                List<ModelResult> modelResults = MySQLResult.find(cursor);
                 cursor.close();
+                ModelInfo modelInfo = getModel(table);
+                for (ModelResult modelResult : modelResults) {
+                    entitys.add(modelResult.toObject(modelInfo));
+                }
             });
         } catch (SQLException e) {
             e.printStackTrace();

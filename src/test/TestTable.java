@@ -7,7 +7,7 @@ import com.loror.sql.Table;
 @Table(name = "test", checkTable = true)
 public class TestTable {
 
-    @Id(returnKey = true)
+    @Id(length = 11, returnKey = true)
     public int id;
     @Column
     public String name;
