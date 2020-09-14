@@ -33,14 +33,16 @@ public class MySQLNativeQuery implements NativeQuery {
     }
 
     @Override
-    public void execute(String sql) {
+    public boolean execute(String sql) {
+        boolean[] execute = new boolean[1];
         try {
             mySQLDataBase.getPst(sql, false, pst -> {
-                pst.execute();
+                execute[0] = pst.execute();
             });
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return execute[0];
     }
 
     @Override
