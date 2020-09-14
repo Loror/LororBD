@@ -1,6 +1,7 @@
 package test;
 
 import com.loror.sql.ModelResult;
+import com.loror.sql.ModelResultList;
 import com.loror.sql.SQLClient;
 import com.loror.sql.Where;
 import com.loror.sql.mysql.MySQLClient;
@@ -43,6 +44,26 @@ public class Test {
                     .where("id", ">", 0)
                     .first());
 
+            ModelResultList modelResults = sqlClient.model("test")
+                    .select("sum(id)")
+                    .where("id", "<>", 0)
+                    .groupBy("`group`")
+                    .having("sum(id)", ">", 1)
+                    .page(1, 2)
+                    .get();
+
+            System.out.println("=============================");
+            for (ModelResult modelResult : modelResults) {
+                System.out.println(modelResult);
+            }
+            System.out.println("=============================");
+
+            modelResults = sqlClient.nativeQuery()
+                    .select("select * from demo");
+
+            for (ModelResult modelResult : modelResults) {
+                System.out.println(modelResult);
+            }
 
 //        sqlClient.model(TestTable.class)
 //                .where("name", "name")

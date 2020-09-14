@@ -59,4 +59,9 @@ public interface SQLClient extends Closeable {
      */
     boolean transaction(Runnable runnable);
 
+    /**
+     * 获取原生执行
+     */
+    NativeQuery nativeQuery();
+
 }

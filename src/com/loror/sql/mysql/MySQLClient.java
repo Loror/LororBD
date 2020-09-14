@@ -2,7 +2,6 @@ package com.loror.sql.mysql;
 
 import com.loror.sql.*;
 
-import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -224,152 +223,9 @@ public class MySQLClient implements SQLClient {
         return false;
     }
 
-    /**
-     * 插入
-     */
-    protected void insert(Object entity) {
-        if (entity == null) {
-            return;
-        }
-        try {
-            ModelInfo modelInfo = getModel(entity.getClass());
-            ModelInfo.ColumnInfo id = modelInfo.getId();
-            boolean returnId = id != null && id.isReturnKey();
-            mySQLDataBase.getPst(MySQLBuilder.getInsertSql(entity, modelInfo), returnId, pst -> {
-                pst.execute();
-                if (returnId) {
-                    // 在执行更新后获取自增长列
-                    ResultSet resultSet = pst.getGeneratedKeys();
-                    int num = 0;
-                    if (resultSet.next()) {
-                        num = resultSet.getInt(1);
-                        resultSet.close();
-                    }
-                    if (num != 0) {
-                        Class<?> type = id.getTypeClass();
-                        Field field = id.getField();
-                        if (type == int.class || type == Integer.class) {
-                            field.setAccessible(true);
-                            try {
-                                field.set(entity, num);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (type == long.class || type == Long.class) {
-                            field.setAccessible(true);
-                            try {
-                                field.set(entity, (long) num);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public NativeQuery nativeQuery() {
+        return new MySQLNativeQuery(mySQLDataBase);
     }
 
-    /**
-     * 根据id更新数据
-     */
-    protected void updateById(Object entity) {
-        if (entity == null) {
-            return;
-        }
-        try {
-            mySQLDataBase.getPst(MySQLBuilder.getUpdateSql(entity, getModel(entity.getClass())), false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 删除数据
-     */
-    protected void delete(Object entity) {
-        if (entity == null) {
-            return;
-        }
-        try {
-            mySQLDataBase.getPst(MySQLBuilder.getDeleteSql(entity, getModel(entity.getClass())), false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 删除所有数据
-     */
-    protected void deleteAll(Class<?> table) {
-        try {
-            mySQLDataBase.getPst("delete from " + getModel(table).getSafeTableName(), false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * id删除
-     */
-    protected void deleteById(String id, Class<?> table) {
-        try {
-            mySQLDataBase.getPst("delete from " + getModel(table).getSafeTableName() + " where " + getModel(table).getId().getSafeName() + " = '" + id + "'", false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 获取所有数据
-     */
-    protected <T> List<T> getAll(Class<T> table) {
-        List<T> entitys = new ArrayList<>();
-        try {
-            ModelInfo modelInfo = getModel(table);
-            mySQLDataBase.getPst("select * from " + modelInfo.getSafeTableName(), false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                List<ModelResult> modelResults = MySQLResult.find(cursor);
-                cursor.close();
-                for (ModelResult modelResult : modelResults) {
-                    entitys.add((T) modelResult.object(table));
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return entitys;
-    }
-
-    /**
-     * 获取条目
-     */
-    protected int count(Class<?> table) {
-        int[] count = {0};
-        try {
-            mySQLDataBase.getPst("select count(1) from " + getModel(table).getSafeTableName(), false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                if (cursor.next()) {
-                    try {
-                        count[0] = cursor.getInt(1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                cursor.close();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count[0];
-    }
 }

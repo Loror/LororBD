@@ -196,7 +196,7 @@ public abstract class Model extends Where {
     /**
      * 条件查询
      */
-    public abstract List<ModelResult> get();
+    public abstract ModelResultList get();
 
     /**
      * 条件查询首条

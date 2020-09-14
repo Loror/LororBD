@@ -5,7 +5,6 @@ import com.loror.sql.*;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,12 +44,75 @@ public class MySQLModel extends Model {
         return this;
     }
 
+    /**
+     * 插入
+     */
+    protected void insert(Object entity) {
+        if (entity == null) {
+            return;
+        }
+        try {
+            ModelInfo modelInfo = ModelInfo.of(entity.getClass());
+            ModelInfo.ColumnInfo id = modelInfo.getId();
+            boolean returnId = id != null && id.isReturnKey();
+            sqlClient.getDatabase().getPst(MySQLBuilder.getInsertSql(entity, modelInfo), returnId, pst -> {
+                pst.execute();
+                if (returnId) {
+                    // 在执行更新后获取自增长列
+                    ResultSet resultSet = pst.getGeneratedKeys();
+                    int num = 0;
+                    if (resultSet.next()) {
+                        num = resultSet.getInt(1);
+                        resultSet.close();
+                    }
+                    if (num != 0) {
+                        Class<?> type = id.getTypeClass();
+                        Field field = id.getField();
+                        if (type == int.class || type == Integer.class) {
+                            field.setAccessible(true);
+                            try {
+                                field.set(entity, num);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (type == long.class || type == Long.class) {
+                            field.setAccessible(true);
+                            try {
+                                field.set(entity, (long) num);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据id更新数据
+     */
+    protected void updateById(Object entity) {
+        if (entity == null) {
+            return;
+        }
+        try {
+            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSql(entity, ModelInfo.of(entity.getClass())), false, pst -> {
+                pst.execute();
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void save(Object entity) {
         if (entity != null) {
             ModelInfo.ColumnInfo idColumn = ModelInfo.of(entity.getClass()).getId();
             if (idColumn == null) {
-                sqlClient.insert(entity);
+                insert(entity);
             } else {
                 long id = 0;
                 Field field = idColumn.getField();
@@ -62,9 +124,9 @@ public class MySQLModel extends Model {
                     e.printStackTrace();
                 }
                 if (id == 0) {
-                    sqlClient.insert(entity);
+                    insert(entity);
                 } else {
-                    sqlClient.updateById(entity);
+                    updateById(entity);
                 }
             }
         }
@@ -180,8 +242,8 @@ public class MySQLModel extends Model {
     }
 
     @Override
-    public List<ModelResult> get() {
-        List<ModelResult> entitys = new ArrayList<>();
+    public ModelResultList get() {
+        ModelResultList entitys = new ModelResultList();
         try {
             sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`" + conditionBuilder.getConditionsWithoutPage(true)
                     + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()), false, pst -> {
