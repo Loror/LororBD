@@ -34,6 +34,7 @@ public class ColumnFilter {
         return name.contains("(")
                 || name.contains(",")
                 || name.contains("`")
-                || name.contains("'");
+                || name.contains("'")
+                || name.contains(" as ");
     }
 }
