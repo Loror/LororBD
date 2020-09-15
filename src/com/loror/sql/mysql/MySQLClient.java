@@ -192,33 +192,26 @@ public class MySQLClient implements SQLClient {
             return false;
         }
 
-        try {
-            if (!connection.getAutoCommit()) {
-                runnable.run();
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            connection.setAutoCommit(false);
+        synchronized (this) {
             try {
-                runnable.run();
-                connection.commit();
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
+                connection.setAutoCommit(false);
                 try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    runnable.run();
+                    connection.commit();
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    try {
+                        connection.rollback();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                } finally {
+                    connection.setAutoCommit(true);
                 }
-            } finally {
-                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return false;
     }

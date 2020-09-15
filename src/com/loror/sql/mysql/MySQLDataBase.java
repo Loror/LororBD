@@ -58,6 +58,7 @@ class MySQLDataBase implements SQLDataBase {
     public void close() throws SQLException {
         if (conn != null) {
             conn.close();
+            conn = null;
         }
     }
 }

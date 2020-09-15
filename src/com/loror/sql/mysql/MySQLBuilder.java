@@ -136,9 +136,9 @@ public class MySQLBuilder {
             columns.put("`" + key + "`", ColumnFilter.safeColumn(object));
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("update `")
+        builder.append("update ")
                 .append(table)
-                .append("` set ");
+                .append(" set ");
         for (String o : columns.keySet()) {
             if (columns.get(o) == null) {
                 builder.append(o)

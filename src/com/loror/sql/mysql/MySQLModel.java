@@ -16,7 +16,11 @@ public class MySQLModel extends Model {
 
     public MySQLModel(String table, MySQLClient sqlClient) {
         super(ConditionBuilder.create());
-        this.table = table;
+        if (ColumnFilter.isFullName(table)) {
+            this.table = table;
+        } else {
+            this.table = "`" + table + "`";
+        }
         this.sqlClient = sqlClient;
     }
 
@@ -145,7 +149,7 @@ public class MySQLModel extends Model {
     public void delete() {
         if (conditionBuilder.getConditionCount() > 0) {
             try {
-                sqlClient.getDatabase().getPst("delete from `" + table + "`" + conditionBuilder.getConditions(true), false, pst -> {
+                sqlClient.getDatabase().getPst("delete from " + table + conditionBuilder.getConditions(true), false, pst -> {
                     pst.execute();
                 });
             } catch (SQLException e) {
@@ -157,7 +161,7 @@ public class MySQLModel extends Model {
     @Override
     public void clear() {
         try {
-            sqlClient.getDatabase().getPst("delete from `" + table + "`", false, pst -> {
+            sqlClient.getDatabase().getPst("delete from " + table, false, pst -> {
                 pst.execute();
             });
         } catch (SQLException e) {
@@ -168,7 +172,7 @@ public class MySQLModel extends Model {
     @Override
     public void truncate() {
         try {
-            sqlClient.getDatabase().getPst("truncate table `" + table + "`", false, pst -> {
+            sqlClient.getDatabase().getPst("truncate table " + table, false, pst -> {
                 pst.execute();
             });
         } catch (SQLException e) {
@@ -216,9 +220,9 @@ public class MySQLModel extends Model {
         try {
             String sql = null;
             if (conditionBuilder.getConditionCount() == 0) {
-                sql = "select count(1) from `" + table + "`";
+                sql = "select count(1) from " + table;
             } else {
-                sql = "select count(1) from `" + table + "`" + conditionBuilder.getConditionsWithoutPage(true);
+                sql = "select count(1) from " + table + conditionBuilder.getConditionsWithoutPage(true);
             }
             sqlClient.getDatabase().getPst(sql, false, pst -> {
                 ResultSet cursor = pst.executeQuery();
@@ -245,7 +249,9 @@ public class MySQLModel extends Model {
     public ModelResultList get() {
         ModelResultList entitys = new ModelResultList();
         try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`" + conditionBuilder.getConditionsWithoutPage(true)
+            System.out.println("select " + this.select + " from " + table + conditionBuilder.getConditionsWithoutPage(true)
+                    + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()));
+            sqlClient.getDatabase().getPst("select " + this.select + " from " + table + conditionBuilder.getConditionsWithoutPage(true)
                     + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()), false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);
@@ -262,7 +268,7 @@ public class MySQLModel extends Model {
     public ModelResult first() {
         ModelResult[] entity = new ModelResult[]{null};
         try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from `" + table + "`"
+            sqlClient.getDatabase().getPst("select " + this.select + " from " + table
                     + conditionBuilder.getConditionsWithoutPage(true) + getGroup() + " limit 0,1", false, pst -> {
                 ResultSet cursor = pst.executeQuery();
                 List<ModelResult> modelResults = MySQLResult.find(cursor);

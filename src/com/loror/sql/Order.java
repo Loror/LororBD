@@ -34,6 +34,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "order by " + key + (orderType == ORDER_DESC ? " desc" : " asc");
+        return "order by `" + key + "`" + (orderType == ORDER_DESC ? " desc" : " asc");
     }
 }
