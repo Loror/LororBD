@@ -7,80 +7,60 @@ import java.util.*;
 public class ModelResult {
 
     /**
-     * 保证map有序且可重复
+     * 保证data有序且可重复
      */
-    private static class IdentityString {
+    private static class IdentityNode {
+        private final String key;
         private final String value;
 
-        private IdentityString(String value) {
+        private IdentityNode(String key, String value) {
+            this.key = key;
             this.value = value;
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            IdentityString that = (IdentityString) o;
-            return value == that.value;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(value);
-        }
-
-        @Override
         public String toString() {
-            return value;
+            return key + "=" + value;
         }
     }
 
-    private final Map<IdentityString, String> data = new LinkedHashMap<>();
+    private final List<IdentityNode> data = new LinkedList<>();
 
     public List<String> keys() {
-        Set<IdentityString> sets = data.keySet();
-        List<String> keys = new ArrayList<>(sets.size());
-        for (IdentityString set : sets) {
-            keys.add(set.value);
+        List<String> keys = new ArrayList<>(data.size());
+        for (IdentityNode item : data) {
+            keys.add(item.key);
         }
         return keys;
     }
 
-    public String intern(String key) {
-        if (key == null) {
-            return null;
-        }
-        for (IdentityString identityString : data.keySet()) {
-            if (key.equals(identityString.value)) {
-                return identityString.value;
+    public List<String> values(String name) {
+        List<String> values = new ArrayList<>(data.size());
+        if (name != null) {
+            for (IdentityNode item : data) {
+                if (name.equals(item.key)) {
+                    values.add(item.value);
+                }
             }
         }
-        return null;
+        return values;
     }
 
-    public void set(String name, String value) {
-        if (name == null) {
-            return;
+    public void add(String name, String value) {
+        if (name != null) {
+            data.add(new IdentityNode(name, value));
         }
-        data.put(new IdentityString(name), value);
     }
 
     public String get(String name) {
-        if (name == null) {
-            return null;
-        }
-        IdentityString key = null;
-        for (IdentityString identityString : data.keySet()) {
-            if (name.equals(identityString.value)) {
-                key = identityString;
-                break;
+        if (name != null) {
+            for (IdentityNode item : data) {
+                if (name.equals(item.key)) {
+                    return item.value;
+                }
             }
         }
-        return key == null ? null : data.get(key);
+        return null;
     }
 
     public int getInt(String name, int defaultValue) {
@@ -120,34 +100,16 @@ public class ModelResult {
         }
         Field[] fields = type.getDeclaredFields();
         if (fields.length != 0) {
-            for (IdentityString key : data.keySet()) {
-                String value = data.get(key);
+            for (IdentityNode item : data) {
                 Field field;
                 try {
-                    field = type.getDeclaredField(key.value);
+                    field = type.getDeclaredField(item.key);
                 } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
                     continue;
                 }
+                String value = item.value;
                 field.setAccessible(true);
-                Class<?> fieldType = field.getType();
-                if (value != null) {
-                    try {
-                        if (fieldType == int.class || fieldType == Integer.class) {
-                            field.set(entity, Integer.parseInt(value));
-                        } else if (fieldType == long.class || fieldType == Long.class) {
-                            field.set(entity, Long.parseLong(value));
-                        } else if (fieldType == float.class || fieldType == Float.class) {
-                            field.set(entity, Float.parseFloat(value));
-                        } else if (fieldType == double.class || fieldType == Double.class) {
-                            field.set(entity, Double.parseDouble(value));
-                        } else if (fieldType == String.class) {
-                            field.set(entity, value);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                setField(entity, field, value);
             }
         }
         return entity;
@@ -164,41 +126,51 @@ public class ModelResult {
             e.printStackTrace();
             throw new IllegalArgumentException(modelInfo.getTableName() + " have no non parametric constructor");
         }
-        List<IdentityString> keys = new LinkedList<>(data.keySet());
+        List<IdentityNode> nodes = new LinkedList<>(data);
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
-            IdentityString key = null;
-            Iterator<IdentityString> iterator = keys.iterator();
+            IdentityNode node = null;
+            Iterator<IdentityNode> iterator = nodes.iterator();
             while (iterator.hasNext()) {
-                IdentityString item = iterator.next();
-                if (item.value.equals(columnInfo.getName())) {
-                    key = item;
+                IdentityNode item = iterator.next();
+                if (item.key.equals(columnInfo.getName())) {
+                    node = item;
                     iterator.remove();
                     break;
                 }
             }
-            String value = data.get(key);
+            if (node == null) {
+                continue;
+            }
+            String value = node.value;
             Field field = columnInfo.getField();
             field.setAccessible(true);
-            Class<?> fieldType = field.getType();
-            if (value != null) {
-                try {
-                    if (fieldType == int.class || fieldType == Integer.class) {
-                        field.set(entity, Integer.parseInt(value));
-                    } else if (fieldType == long.class || fieldType == Long.class) {
-                        field.set(entity, Long.parseLong(value));
-                    } else if (fieldType == float.class || fieldType == Float.class) {
-                        field.set(entity, Float.parseFloat(value));
-                    } else if (fieldType == double.class || fieldType == Double.class) {
-                        field.set(entity, Double.parseDouble(value));
-                    } else if (fieldType == String.class) {
-                        field.set(entity, value);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            setField(entity, field, value);
         }
         return entity;
+    }
+
+    /**
+     * field设置值
+     */
+    private void setField(Object obj, Field field, String value) {
+        if (value != null) {
+            Class<?> fieldType = field.getType();
+            try {
+                if (fieldType == int.class || fieldType == Integer.class) {
+                    field.set(obj, Integer.parseInt(value));
+                } else if (fieldType == long.class || fieldType == Long.class) {
+                    field.set(obj, Long.parseLong(value));
+                } else if (fieldType == float.class || fieldType == Float.class) {
+                    field.set(obj, Float.parseFloat(value));
+                } else if (fieldType == double.class || fieldType == Double.class) {
+                    field.set(obj, Double.parseDouble(value));
+                } else if (fieldType == String.class) {
+                    field.set(obj, value);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

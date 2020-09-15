@@ -1,6 +1,5 @@
 package com.loror.sql.mysql;
 
-import com.loror.sql.ModelInfo;
 import com.loror.sql.ModelResult;
 
 import java.sql.ResultSet;
@@ -28,7 +27,7 @@ public class MySQLResult {
                     modelResults.add(modelResult);
                     for (int i = 0; i < columnCount; i++) {
                         String result = cursor.getString(i + 1);
-                        modelResult.set(columnNames.get(i), result);
+                        modelResult.add(columnNames.get(i), result);
                     }
                 }
             } catch (Exception e) {
