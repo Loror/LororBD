@@ -157,7 +157,7 @@ public class ModelResult {
             e.printStackTrace();
             throw new IllegalArgumentException(modelInfo.getTableName() + " have no non parametric constructor");
         }
-        List<IdentityString> keys = new ArrayList<>(data.keySet());
+        List<IdentityString> keys = new LinkedList<>(data.keySet());
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             IdentityString key = null;
             Iterator<IdentityString> iterator = keys.iterator();
