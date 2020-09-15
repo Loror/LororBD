@@ -30,7 +30,14 @@ public class MySQLClient implements SQLClient {
     private void init(String url, String name, String password) {
         close();
         try {
-            mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password, logListener);
+            mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password) {
+                @Override
+                public void onGetPst(String sql) {
+                    if (logListener != null) {
+                        logListener.log(sql);
+                    }
+                }
+            };
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }

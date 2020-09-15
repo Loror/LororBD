@@ -10,19 +10,17 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-class MySQLDataBase implements SQLDataBase {
+abstract class MySQLDataBase implements SQLDataBase {
 
     public interface OnGetPst {
         void getPst(PreparedStatement pst) throws SQLException;
     }
 
     private Connection conn;
-    private SQLClient.LogListener logListener;
 
-    public MySQLDataBase(String driver, String url, String name, String password, SQLClient.LogListener logListener) throws SQLException, ClassNotFoundException {
+    public MySQLDataBase(String driver, String url, String name, String password) throws SQLException, ClassNotFoundException {
         Class.forName(driver);// 指定连接类型
         conn = DriverManager.getConnection(url, name, password);// 获取连接
-        this.logListener = logListener;
     }
 
     public Connection getConn() {
@@ -33,9 +31,7 @@ class MySQLDataBase implements SQLDataBase {
         if (conn == null) {
             return null;
         }
-        if (logListener != null) {
-            logListener.log(sql);
-        }
+        onGetPst(sql);
         if (returnKey) {
             return conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);// 准备执行语句
         } else {
@@ -60,6 +56,8 @@ class MySQLDataBase implements SQLDataBase {
             preparedStatement.close();
         }
     }
+
+    public abstract void onGetPst(String sql);
 
     public void close() throws SQLException {
         if (conn != null) {
