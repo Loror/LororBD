@@ -73,7 +73,14 @@ public class ModelResult {
         if (name == null) {
             return null;
         }
-        return data.get(new IdentityString(name));
+        IdentityString key = null;
+        for (IdentityString identityString : data.keySet()) {
+            if (name.equals(identityString.value)) {
+                key = identityString;
+                break;
+            }
+        }
+        return key == null ? null : data.get(key);
     }
 
     public int getInt(String name, int defaultValue) {
