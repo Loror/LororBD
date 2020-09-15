@@ -249,8 +249,6 @@ public class MySQLModel extends Model {
     public ModelResultList get() {
         ModelResultList entitys = new ModelResultList();
         try {
-            System.out.println("select " + this.select + " from " + table + conditionBuilder.getConditionsWithoutPage(true)
-                    + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()));
             sqlClient.getDatabase().getPst("select " + this.select + " from " + table + conditionBuilder.getConditionsWithoutPage(true)
                     + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()), false, pst -> {
                 ResultSet cursor = pst.executeQuery();

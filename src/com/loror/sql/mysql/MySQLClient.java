@@ -15,6 +15,7 @@ public class MySQLClient implements SQLClient {
     private List<Class<?>> execTableCreated = new LinkedList<>();//已执行过创建
     private List<Class<?>> execTableUpdated = new LinkedList<>();//已执行过更新表
     private OnClose onClose;//执行close方法时候调用，如果为空则执行关闭连接
+    private LogListener logListener;
 
     public MySQLClient(String url, String name, String password) {
         this.url = url;
@@ -29,7 +30,7 @@ public class MySQLClient implements SQLClient {
     private void init(String url, String name, String password) {
         close();
         try {
-            mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password);
+            mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password, logListener);
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -42,6 +43,11 @@ public class MySQLClient implements SQLClient {
     @Override
     public void setOnClose(OnClose onClose) {
         this.onClose = onClose;
+    }
+
+    @Override
+    public void setLogListener(LogListener logListener) {
+        this.logListener = logListener;
     }
 
     @Override

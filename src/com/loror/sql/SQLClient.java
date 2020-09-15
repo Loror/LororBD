@@ -8,6 +8,10 @@ public interface SQLClient extends Closeable {
         void close(SQLDataBase dataBase);
     }
 
+    interface LogListener {
+        void log(String sql);
+    }
+
     /**
      * 重新开启
      */
@@ -27,6 +31,11 @@ public interface SQLClient extends Closeable {
      * 代理close方法
      */
     void setOnClose(OnClose onClose);
+
+    /**
+     * 代理log
+     */
+    void setLogListener(LogListener logListener);
 
     /**
      * 创建表
