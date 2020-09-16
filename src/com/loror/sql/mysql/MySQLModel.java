@@ -200,6 +200,6 @@ public class MySQLModel extends Model {
         String sql = "select " + this.select + " from " + table
                 + conditionBuilder.getConditionsWithoutPage(true) + getGroup() + " limit 0,1";
         ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
-        return results.size() == 0 ? null : results.get(0);
+        return results.size() == 0 ? new ModelResult(true) : results.get(0);
     }
 }

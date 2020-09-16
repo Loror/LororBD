@@ -24,6 +24,20 @@ public class ModelResult {
         }
     }
 
+    private final boolean isNull;
+
+    public ModelResult() {
+        this(false);
+    }
+
+    public ModelResult(boolean isNull) {
+        this.isNull = isNull;
+    }
+
+    public boolean isNull() {
+        return isNull;
+    }
+
     public interface OnForEach {
         void item(String key, String value);
     }
@@ -31,6 +45,9 @@ public class ModelResult {
     private final List<IdentityNode> data = new LinkedList<>();
 
     public void forEach(OnForEach onForEach) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
         if (onForEach != null) {
             for (IdentityNode node : data) {
                 onForEach.item(node.key, node.value);
@@ -39,6 +56,9 @@ public class ModelResult {
     }
 
     public List<String> keys() {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
         List<String> keys = new ArrayList<>(data.size());
         for (IdentityNode item : data) {
             keys.add(item.key);
@@ -47,6 +67,9 @@ public class ModelResult {
     }
 
     public List<String> values(String name) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
         List<String> values = new ArrayList<>(data.size());
         if (name != null) {
             for (IdentityNode item : data) {
@@ -59,18 +82,27 @@ public class ModelResult {
     }
 
     public void addAll(ModelResult modelResult) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
         if (modelResult != null) {
             data.addAll(modelResult.data);
         }
     }
 
     public void add(String name, String value) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
         if (name != null) {
             data.add(new IdentityNode(name, value));
         }
     }
 
     public String get(String name) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
         if (name != null) {
             for (IdentityNode item : data) {
                 if (name.equals(item.key)) {
@@ -102,7 +134,7 @@ public class ModelResult {
     }
 
     public <T> T object(Class<T> type) {
-        if (type == null) {
+        if (type == null || isNull) {
             return null;
         }
         T entity;
