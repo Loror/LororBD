@@ -4,7 +4,7 @@ package com.loror.sql;
  * Created by Loror on 2018/2/8.
  */
 
-public class Order {
+public class Order implements Comparable<Order> {
     public static int ORDER_DESC = 0;
     public static int ORDER_ASC = 1;
 
@@ -34,6 +34,17 @@ public class Order {
 
     @Override
     public String toString() {
-        return "order by `" + key + "`" + (orderType == ORDER_DESC ? " desc" : " asc");
+        return "order by " +
+                (ColumnFilter.isFullName(key) ? key : ("`" + key + "`")) +
+                (orderType == ORDER_DESC ? " desc" : " asc");
+    }
+
+    @Override
+    public int compareTo(Order that) {
+        int compare = this.key.compareTo(that.key);
+        if (compare != 0) {
+            return compare;
+        }
+        return Integer.compare(this.orderType, that.orderType);
     }
 }

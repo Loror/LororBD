@@ -2,6 +2,7 @@ package com.loror.sql;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class Where {
 
@@ -91,9 +92,9 @@ public class Where {
         if (onWhere != null) {
             Where where = new Where(ConditionBuilder.create());
             onWhere.where(where);
-            List<Condition> conditions = where.conditionBuilder.getConditionList();
+            Set<Condition> conditions = where.conditionBuilder.getConditionList();
             if (conditions.size() > 0) {
-                Condition top = conditions.get(0);
+                Condition top = conditions.iterator().next();
                 top.setType(type);
                 for (Condition condition : conditions) {
                     if (condition == top) {

@@ -9,7 +9,7 @@ public class ModelResult {
     /**
      * 保证data有序且可重复
      */
-    private static class IdentityNode {
+    protected static class IdentityNode {
         private final String key;
         private final String value;
 
@@ -24,7 +24,19 @@ public class ModelResult {
         }
     }
 
+    public interface OnForEach {
+        void item(String key, String value);
+    }
+
     private final List<IdentityNode> data = new LinkedList<>();
+
+    public void forEach(OnForEach onForEach) {
+        if (onForEach != null) {
+            for (IdentityNode node : data) {
+                onForEach.item(node.key, node.value);
+            }
+        }
+    }
 
     public List<String> keys() {
         List<String> keys = new ArrayList<>(data.size());
@@ -44,6 +56,12 @@ public class ModelResult {
             }
         }
         return values;
+    }
+
+    public void addAll(ModelResult modelResult) {
+        if (modelResult != null) {
+            data.addAll(modelResult.data);
+        }
     }
 
     public void add(String name, String value) {

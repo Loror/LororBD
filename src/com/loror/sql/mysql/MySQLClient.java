@@ -16,6 +16,7 @@ public class MySQLClient implements SQLClient {
     private List<Class<?>> execTableUpdated = new LinkedList<>();//已执行过更新表
     private OnClose onClose;//执行close方法时候调用，如果为空则执行关闭连接
     private LogListener logListener;
+    private SQLCache sqlCache;
 
     public MySQLClient(String url, String name, String password) {
         this.url = url;
@@ -32,19 +33,56 @@ public class MySQLClient implements SQLClient {
         try {
             mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password) {
                 @Override
-                public void onGetPst(String sql) {
+                public void onSql(boolean connect, String sql) {
                     if (logListener != null) {
-                        logListener.log(sql);
+                        logListener.log(connect, sql);
                     }
+                }
+
+                @Override
+                public ModelResultList beforeQuery(String sql) {
+                    return sqlCache == null ? null : sqlCache.beforeQuery(sql);
+                }
+
+                @Override
+                public boolean execute(String sql) {
+                    boolean result = super.execute(sql);
+                    if (sqlCache != null) {
+                        sqlCache.onExecute(sql);
+                    }
+                    return result;
+                }
+
+                @Override
+                public int executeUpdate(String sql) {
+                    int result = super.executeUpdate(sql);
+                    if (sqlCache != null) {
+                        sqlCache.onExecute(sql);
+                    }
+                    return result;
+                }
+
+                @Override
+                public ModelResult executeByReturnKeys(String sql) {
+                    ModelResult result = super.executeByReturnKeys(sql);
+                    if (sqlCache != null) {
+                        sqlCache.onExecute(sql);
+                    }
+                    return result;
+                }
+
+                @Override
+                public ModelResultList executeQuery(String sql) {
+                    ModelResultList result = super.executeQuery(sql);
+                    if (sqlCache != null) {
+                        sqlCache.onExecuteQuery(sql, result);
+                    }
+                    return result;
                 }
             };
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public MySQLDataBase getDatabase() {
-        return mySQLDataBase;
     }
 
     @Override
@@ -58,6 +96,11 @@ public class MySQLClient implements SQLClient {
     }
 
     @Override
+    public void setSQLCache(SQLCache sqlCache) {
+        this.sqlCache = sqlCache;
+    }
+
+    @Override
     public void reStart() {
         if (this.mySQLDataBase == null) {
             init(url, name, password);
@@ -67,7 +110,7 @@ public class MySQLClient implements SQLClient {
     @Override
     public void close() {
         if (this.onClose != null) {
-            this.onClose.close(mySQLDataBase);
+            this.onClose.close(this);
         } else {
             if (this.mySQLDataBase != null) {
                 try {
@@ -96,25 +139,12 @@ public class MySQLClient implements SQLClient {
             return;
         }
         execTableCreated.add(table);
-        try {
-            mySQLDataBase.getPst(MySQLBuilder.getCreateSql(getModel(table)), false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        mySQLDataBase.execute(MySQLBuilder.getCreateSql(getModel(table)));
     }
 
     @Override
     public void dropTable(Class<?> table) {
-        try {
-            mySQLDataBase.getPst(MySQLBuilder.getDropTableSql(getModel(table)), false, pst -> {
-                pst.execute();
-            });
-            execTableCreated.remove(table);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        mySQLDataBase.execute(MySQLBuilder.getDropTableSql(getModel(table)));
     }
 
     @Override
@@ -123,70 +153,71 @@ public class MySQLClient implements SQLClient {
             return;
         }
         execTableUpdated.add(table);
+        ModelInfo modelInfo = getModel(table);
+        List<String> columnNames = new ArrayList<>();
         try {
-            ModelInfo modelInfo = getModel(table);
             mySQLDataBase.getPst("select * from " + modelInfo.getSafeTableName() + " limit 1", false, preparedStatement -> {
                 ResultSet cursor = preparedStatement.executeQuery();
-                List<String> columnNames = new ArrayList<>();
                 ResultSetMetaData data = cursor.getMetaData();
                 for (int i = 0; i < data.getColumnCount(); i++) {
                     columnNames.add(data.getColumnName(i + 1));
                 }
                 cursor.close();
-                String idName = null;
-                List<String> newColumnNames = new ArrayList<>();
-                HashMap<String, ModelInfo.ColumnInfo> columnHashMap = new HashMap<>();
-                for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
-                    if (columnInfo.isPrimaryKey()) {
-                        idName = columnInfo.getName();
-                    } else {
-                        newColumnNames.add(columnInfo.getName());
-                        columnHashMap.put(columnInfo.getName(), columnInfo);
-                    }
-                }
-
-                int i;
-                List<String> different = new ArrayList<>();
-                for (i = 0; i < columnNames.size(); i++) {
-                    String columnName = columnNames.get(i);
-                    if (idName != null && idName.equals(columnName)) {
-                        continue;
-                    }
-                    boolean remove = newColumnNames.remove(columnName);
-                    if (!remove) {
-                        different.add(columnName);
-                    }
-                }
-                if (different.size() > 0) {
-                    StringBuilder builder = new StringBuilder("[");
-                    for (String var : different) {
-                        builder.append(var)
-                                .append(",");
-                    }
-                    builder.deleteCharAt(builder.length() - 1);
-                    builder.append("]");
-                    throw new IllegalStateException("cannot reduce column at this function:" + builder.toString());
-                }
-                for (i = 0; i < newColumnNames.size(); i++) {
-                    String newColumnName = newColumnNames.get(i);
-                    ModelInfo.ColumnInfo columnInfo = columnHashMap.get(newColumnName);
-                    String type = columnInfo.getType();
-                    String defaultValue = columnInfo.getDefaultValue();
-                    mySQLDataBase.getPst("alter table " + modelInfo.getSafeTableName() + " add column `" + newColumnName + "` " + type, false, new MySQLDataBase.OnGetPst() {
-                        @Override
-                        public void getPst(PreparedStatement pst) throws SQLException {
-                            pst.execute();
-                            if (defaultValue != null && defaultValue.length() > 0) {
-                                pst.execute("update " + modelInfo.getSafeTableName() + " set `" + newColumnName +
-                                        "` = '" + ColumnFilter.safeColumn(defaultValue) + "'");
-                            }
-                        }
-                    });
-                }
             });
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        if (columnNames.size() == 0) {
+            return;
+        }
+        String idName = null;
+        List<String> newColumnNames = new ArrayList<>();
+        HashMap<String, ModelInfo.ColumnInfo> columnHashMap = new HashMap<>();
+        for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
+            if (columnInfo.isPrimaryKey()) {
+                idName = columnInfo.getName();
+            } else {
+                newColumnNames.add(columnInfo.getName());
+                columnHashMap.put(columnInfo.getName(), columnInfo);
+            }
+        }
+
+        List<String> different = new ArrayList<>();
+        for (int i = 0; i < columnNames.size(); i++) {
+            String columnName = columnNames.get(i);
+            if (idName != null && idName.equals(columnName)) {
+                continue;
+            }
+            boolean remove = newColumnNames.remove(columnName);
+            if (!remove) {
+                different.add(columnName);
+            }
+        }
+        if (different.size() > 0) {
+            StringBuilder builder = new StringBuilder("[");
+            for (String var : different) {
+                builder.append(var)
+                        .append(",");
+            }
+            builder.deleteCharAt(builder.length() - 1);
+            builder.append("]");
+            throw new IllegalStateException("cannot reduce column at this function:" + builder.toString());
+        }
+        transaction(() -> {
+            for (int i = 0; i < newColumnNames.size(); i++) {
+                String newColumnName = newColumnNames.get(i);
+                ModelInfo.ColumnInfo columnInfo = columnHashMap.get(newColumnName);
+                String type = columnInfo.getType();
+                if (mySQLDataBase.execute("alter table " + modelInfo.getSafeTableName() + " add column `" + newColumnName + "` " + type)) {
+                    String defaultValue = columnInfo.getDefaultValue();
+                    if (defaultValue != null && defaultValue.length() > 0) {
+                        mySQLDataBase.execute("update " + modelInfo.getSafeTableName() + " set `" + newColumnName +
+                                "` = '" + ColumnFilter.safeColumn(defaultValue) + "'");
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
@@ -230,8 +261,8 @@ public class MySQLClient implements SQLClient {
     }
 
     @Override
-    public NativeQuery nativeQuery() {
-        return new MySQLNativeQuery(mySQLDataBase);
+    public SQLDataBase nativeQuery() {
+        return mySQLDataBase;
     }
 
 }

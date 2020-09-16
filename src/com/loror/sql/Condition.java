@@ -2,18 +2,20 @@ package com.loror.sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by Loror on 2018/2/8.
  */
 
-public class Condition {
+public class Condition implements Comparable<Condition> {
     private String key;
     private String operator;
     private String column;
     private int type;//0,and.1,or
     private boolean quotation;
-    private List<Condition> conditions;
+    private Set<Condition> conditions;
 
     public Condition(String key, String operator, Object column) {
         this(key, operator, column, 0);
@@ -69,12 +71,12 @@ public class Condition {
 
     public void addCondition(Condition condition) {
         if (this.conditions == null) {
-            this.conditions = new ArrayList<>();
+            this.conditions = new TreeSet<>();
         }
         this.conditions.add(condition);
     }
 
-    public List<Condition> getConditions() {
+    public Set<Condition> getConditions() {
         return conditions;
     }
 
@@ -88,9 +90,14 @@ public class Condition {
         if (conditions != null) {
             builder.append("(");
         }
-        builder.append("`");
-        builder.append(key);
-        builder.append("` ");
+        if (ColumnFilter.isFullName(key)) {
+            builder.append(key);
+            builder.append(" ");
+        } else {
+            builder.append("`");
+            builder.append(key);
+            builder.append("` ");
+        }
         builder.append(operator);
         if (withColumn) {
             if (column == null) {
@@ -110,14 +117,25 @@ public class Condition {
             builder.append(" ?");
         }
         if (conditions != null) {
-            int size = conditions.size();
-            for (int i = 0; i < size; i++) {
-                Condition condition = conditions.get(i);
-                builder.append(conditions.get(i).getType() == 0 ? " and " : " or ");
+            for (Condition condition : conditions) {
+                builder.append(condition.getType() == 0 ? " and " : " or ");
                 builder.append(condition.toString(withColumn));
             }
             builder.append(")");
         }
         return builder.toString();
+    }
+
+    @Override
+    public int compareTo(Condition that) {
+        int compare = this.key.compareTo(that.key);
+        if (compare != 0) {
+            return compare;
+        }
+        compare = this.operator.compareTo(that.operator);
+        if (compare != 0) {
+            return compare;
+        }
+        return this.column == null ? -1 : this.column.compareTo(that.column);
     }
 }

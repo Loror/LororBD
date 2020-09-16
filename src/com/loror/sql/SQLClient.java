@@ -5,11 +5,19 @@ import java.io.Closeable;
 public interface SQLClient extends Closeable {
 
     interface OnClose {
-        void close(SQLDataBase dataBase);
+        void close(SQLClient sqlClient);
     }
 
     interface LogListener {
-        void log(String sql);
+        void log(boolean connect, String sql);
+    }
+
+    interface SQLCache {
+        ModelResultList beforeQuery(String sql);
+
+        void onExecuteQuery(String sql, ModelResultList modelResults);
+
+        void onExecute(String sql);
     }
 
     /**
@@ -36,6 +44,11 @@ public interface SQLClient extends Closeable {
      * 代理log
      */
     void setLogListener(LogListener logListener);
+
+    /**
+     * 设置sql缓存
+     */
+    void setSQLCache(SQLCache sqlCache);
 
     /**
      * 创建表
@@ -71,6 +84,6 @@ public interface SQLClient extends Closeable {
     /**
      * 获取原生执行
      */
-    NativeQuery nativeQuery();
+    SQLDataBase nativeQuery();
 
 }

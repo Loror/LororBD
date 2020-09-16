@@ -1,6 +1,7 @@
 package com.loror.sql.mysql;
 
 import com.loror.sql.ModelResult;
+import com.loror.sql.ModelResultList;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -12,8 +13,8 @@ public class MySQLResult {
     /**
      * 处理查询结果
      */
-    public static List<ModelResult> find(ResultSet cursor) {
-        List<ModelResult> modelResults = new ArrayList<>();
+    public static ModelResultList find(ResultSet cursor) {
+        ModelResultList modelResults = new ModelResultList();
         if (cursor != null) {
             try {
                 List<String> columnNames = new ArrayList<>();

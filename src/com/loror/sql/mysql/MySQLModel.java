@@ -3,8 +3,6 @@ package com.loror.sql.mysql;
 import com.loror.sql.*;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -55,43 +53,37 @@ public class MySQLModel extends Model {
         if (entity == null) {
             return;
         }
-        try {
-            ModelInfo modelInfo = ModelInfo.of(entity.getClass());
-            ModelInfo.ColumnInfo id = modelInfo.getId();
-            boolean returnId = id != null && id.isReturnKey();
-            sqlClient.getDatabase().getPst(MySQLBuilder.getInsertSql(entity, modelInfo), returnId, pst -> {
-                pst.execute();
-                if (returnId) {
-                    // 在执行更新后获取自增长列
-                    ResultSet resultSet = pst.getGeneratedKeys();
-                    int num = 0;
-                    if (resultSet.next()) {
-                        num = resultSet.getInt(1);
-                        resultSet.close();
-                    }
-                    if (num != 0) {
-                        Class<?> type = id.getTypeClass();
-                        Field field = id.getField();
-                        if (type == int.class || type == Integer.class) {
-                            field.setAccessible(true);
-                            try {
-                                field.set(entity, num);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (type == long.class || type == Long.class) {
-                            field.setAccessible(true);
-                            try {
-                                field.set(entity, (long) num);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
+        ModelInfo modelInfo = ModelInfo.of(entity.getClass());
+        ModelInfo.ColumnInfo id = modelInfo.getId();
+        boolean returnId = id != null && id.isReturnKey();
+        String sql = MySQLBuilder.getInsertSql(entity, modelInfo);
+        if (returnId) {
+            ModelResult modelResult = sqlClient.nativeQuery().executeByReturnKeys(sql);
+            List<String> keys = modelResult.keys();
+            if (keys.size() > 0) {
+                long num = modelResult.getLong(keys.get(0), 0);
+                if (num != 0) {
+                    Class<?> type = id.getTypeClass();
+                    Field field = id.getField();
+                    if (type == int.class || type == Integer.class) {
+                        field.setAccessible(true);
+                        try {
+                            field.set(entity, (int) num);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (type == long.class || type == Long.class) {
+                        field.setAccessible(true);
+                        try {
+                            field.set(entity, num);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
+            }
+        } else {
+            sqlClient.nativeQuery().execute(sql);
         }
     }
 
@@ -102,13 +94,8 @@ public class MySQLModel extends Model {
         if (entity == null) {
             return;
         }
-        try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSql(entity, ModelInfo.of(entity.getClass())), false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = MySQLBuilder.getUpdateSql(entity, ModelInfo.of(entity.getClass()));
+        sqlClient.nativeQuery().executeUpdate(sql);
     }
 
     @Override
@@ -148,36 +135,21 @@ public class MySQLModel extends Model {
     @Override
     public void delete() {
         if (conditionBuilder.getConditionCount() > 0) {
-            try {
-                sqlClient.getDatabase().getPst("delete from " + table + conditionBuilder.getConditions(true), false, pst -> {
-                    pst.execute();
-                });
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            String sql = "delete from " + table + conditionBuilder.getConditions(true);
+            sqlClient.nativeQuery().execute(sql);
         }
     }
 
     @Override
     public void clear() {
-        try {
-            sqlClient.getDatabase().getPst("delete from " + table, false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = "delete from " + table;
+        sqlClient.nativeQuery().execute(sql);
     }
 
     @Override
     public void truncate() {
-        try {
-            sqlClient.getDatabase().getPst("truncate table " + table, false, pst -> {
-                pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = "truncate table " + table;
+        sqlClient.nativeQuery().execute(sql);
     }
 
     @Override
@@ -185,16 +157,9 @@ public class MySQLModel extends Model {
         if (entity == null) {
             return 0;
         }
-        int[] updates = new int[1];
-        try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(entity, ModelInfo.of(entity.getClass()), ignoreNull)
-                    + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
-                updates[0] = pst.executeUpdate();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return updates[0];
+        String sql = MySQLBuilder.getUpdateSqlNoWhere(entity, ModelInfo.of(entity.getClass()), ignoreNull)
+                + conditionBuilder.getConditionsWithoutPage(true);
+        return sqlClient.nativeQuery().executeUpdate(sql);
     }
 
     @Override
@@ -202,43 +167,21 @@ public class MySQLModel extends Model {
         if (values == null) {
             return 0;
         }
-        int[] updates = new int[1];
-        try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getUpdateSqlNoWhere(values, table)
-                    + conditionBuilder.getConditionsWithoutPage(true), false, pst -> {
-                updates[0] = pst.executeUpdate();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return updates[0];
+        String sql = MySQLBuilder.getUpdateSqlNoWhere(values, table)
+                + conditionBuilder.getConditionsWithoutPage(true);
+        return sqlClient.nativeQuery().executeUpdate(sql);
     }
 
     @Override
     public int count() {
-        int[] count = {0};
-        try {
-            String sql = null;
-            if (conditionBuilder.getConditionCount() == 0) {
-                sql = "select count(1) from " + table;
-            } else {
-                sql = "select count(1) from " + table + conditionBuilder.getConditionsWithoutPage(true);
-            }
-            sqlClient.getDatabase().getPst(sql, false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                if (cursor.next()) {
-                    try {
-                        count[0] = cursor.getInt(1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                cursor.close();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
+        String sql;
+        if (conditionBuilder.getConditionCount() == 0) {
+            sql = "select count(1) from " + table;
+        } else {
+            sql = "select count(1) from " + table + conditionBuilder.getConditionsWithoutPage(true);
         }
-        return count[0];
+        ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
+        return results.size() == 0 ? 0 : results.get(0).getInt("count(1)", 0);
     }
 
     private String getGroup() {
@@ -247,53 +190,16 @@ public class MySQLModel extends Model {
 
     @Override
     public ModelResultList get() {
-        ModelResultList entitys = new ModelResultList();
-        try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from " + table + conditionBuilder.getConditionsWithoutPage(true)
-                    + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString()), false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                List<ModelResult> modelResults = MySQLResult.find(cursor);
-                cursor.close();
-                entitys.addAll(modelResults);
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return entitys;
+        String sql = "select " + this.select + " from " + table + conditionBuilder.getConditionsWithoutPage(true)
+                + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString());
+        return sqlClient.nativeQuery().executeQuery(sql);
     }
 
     @Override
     public ModelResult first() {
-        ModelResult[] entity = new ModelResult[]{null};
-        try {
-            sqlClient.getDatabase().getPst("select " + this.select + " from " + table
-                    + conditionBuilder.getConditionsWithoutPage(true) + getGroup() + " limit 0,1", false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                List<ModelResult> modelResults = MySQLResult.find(cursor);
-                cursor.close();
-                if (modelResults.size() > 0) {
-                    entity[0] = modelResults.get(0);
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return entity[0];
-    }
-
-    public int lastInsertId(Class<?> table) {
-        int[] id = {-1};
-        try {
-            sqlClient.getDatabase().getPst(MySQLBuilder.getLastIdSql(ModelInfo.of(table)), false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                if (cursor.next()) {
-                    id[0] = cursor.getInt(1);
-                }
-                cursor.close();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return id[0];
+        String sql = "select " + this.select + " from " + table
+                + conditionBuilder.getConditionsWithoutPage(true) + getGroup() + " limit 0,1";
+        ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
+        return results.size() == 0 ? null : results.get(0);
     }
 }

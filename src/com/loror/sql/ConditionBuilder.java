@@ -2,6 +2,8 @@ package com.loror.sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by Loror on 2018/2/8.
@@ -9,8 +11,8 @@ import java.util.List;
 
 public class ConditionBuilder {
 
-    private List<Condition> conditions = new ArrayList<>();
-    private List<Order> orders = new ArrayList<>();
+    private Set<Condition> conditions = new TreeSet<>();
+    private Set<Order> orders = new TreeSet<>();
     private Page page;
     private boolean hasNull;
 
@@ -29,11 +31,11 @@ public class ConditionBuilder {
         return conditions.size();
     }
 
-    public List<Condition> getConditionList() {
+    public Set<Condition> getConditionList() {
         return conditions;
     }
 
-    public List<Order> getOrderList() {
+    public Set<Order> getOrderList() {
         return orders;
     }
 
@@ -156,11 +158,13 @@ public class ConditionBuilder {
      */
     public String getOrders() {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < orders.size(); i++) {
-            if (i == 0) {
-                builder.append(orders.get(i).toString());
+        boolean flag = false;
+        for (Order order : orders) {
+            if (!flag) {
+                builder.append(order.toString());
+                flag = true;
             } else {
-                builder.append(orders.get(i).toString().replace("order by ", ","));
+                builder.append(order.toString().replace("order by ", ","));
             }
         }
         return builder.toString();
@@ -178,13 +182,15 @@ public class ConditionBuilder {
      */
     public String getConditionsWithoutPage(boolean withColumn) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < conditions.size(); i++) {
-            if (i > 0) {
-                builder.append(conditions.get(i).getType() == 0 ? " and " : " or ");
+        boolean flag = false;
+        for (Condition condition : conditions) {
+            if (flag) {
+                builder.append(condition.getType() == 0 ? " and " : " or ");
             } else {
                 builder.append(" where ");
+                flag = true;
             }
-            builder.append(conditions.get(i).toString(withColumn));
+            builder.append(condition.toString(withColumn));
         }
         String order = getOrders();
         if (order.length() > 0) {
@@ -205,9 +211,8 @@ public class ConditionBuilder {
         return array.toArray(new String[0]);
     }
 
-    private void add(List<String> array, List<Condition> conditions) {
-        for (int i = 0; i < conditions.size(); i++) {
-            Condition condition = conditions.get(i);
+    private void add(List<String> array, Set<Condition> conditions) {
+        for (Condition condition : conditions) {
             array.add(condition.getColumn());
             if (condition.getConditions() != null) {
                 add(array, condition.getConditions());
