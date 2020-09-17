@@ -130,10 +130,10 @@ public class MySQLBuilder {
                 .append(table)
                 .append(" set ");
         for (String name : values.keySet()) {
+            Object value = values.get(name);
             if (!ColumnFilter.isFullName(name)) {
                 name = "`" + name + "`";
             }
-            Object value = values.get(name);
             if (value == null) {
                 builder.append(name)
                         .append(" = null,");
