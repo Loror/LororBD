@@ -39,6 +39,9 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     public void getPst(String sql, boolean returnKey, OnGetPst onGetPst) throws SQLException {
         PreparedStatement preparedStatement = getPst(sql, returnKey);
+        if (preparedStatement == null) {
+            return;
+        }
         try {
             if (onGetPst != null) {
                 onGetPst.getPst(preparedStatement);
