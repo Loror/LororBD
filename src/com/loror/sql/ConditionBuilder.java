@@ -12,6 +12,7 @@ import java.util.TreeSet;
 public class ConditionBuilder {
 
     private Set<Condition> conditions = new TreeSet<>();
+    private Set<Having> havings = new TreeSet<>();
     private Set<Order> orders = new TreeSet<>();
     private Page page;
     private boolean hasNull;
@@ -154,6 +155,14 @@ public class ConditionBuilder {
     }
 
     /**
+     * 增加条件
+     */
+    public ConditionBuilder addHaving(Having having) {
+        havings.add(having);
+        return this;
+    }
+
+    /**
      * 获取排序语句
      */
     public String getOrders() {
@@ -218,6 +227,21 @@ public class ConditionBuilder {
                 add(array, condition.getConditions());
             }
         }
+    }
+
+    /**
+     * 获取having
+     */
+    public String getHaving() {
+        StringBuilder builder = new StringBuilder();
+        for (Having having : havings) {
+            builder.append(having)
+                    .append(" and ");
+        }
+        if (builder.length() > 0) {
+            builder.delete(builder.length() - 5, builder.length());
+        }
+        return builder.toString();
     }
 
     @Override

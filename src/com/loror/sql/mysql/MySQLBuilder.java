@@ -78,13 +78,8 @@ public class MySQLBuilder {
             }
         }
 
-        StringBuilder builder = new StringBuilder();
-        builder.append(getUpdateSqlNoWhere(entity, modelInfo, false));
-        builder.append(" where ")
-                .append(idName)
-                .append(" = ")
-                .append(idVolume);
-        return builder.toString();
+        return getUpdateSqlNoWhere(entity, modelInfo, false) +
+                " where `" + idName + "` = " + idVolume;
     }
 
     /**
@@ -130,23 +125,22 @@ public class MySQLBuilder {
      * 获得更新语句
      */
     public static String getUpdateSqlNoWhere(Map<String, Object> values, String table) {
-        HashMap<String, String> columns = new HashMap<>();
-        for (String key : values.keySet()) {
-            Object object = values.get(key);
-            columns.put("`" + key + "`", ColumnFilter.safeColumn(object));
-        }
         StringBuilder builder = new StringBuilder();
         builder.append("update ")
                 .append(table)
                 .append(" set ");
-        for (String o : columns.keySet()) {
-            if (columns.get(o) == null) {
-                builder.append(o)
+        for (String name : values.keySet()) {
+            if (!ColumnFilter.isFullName(name)) {
+                name = "`" + name + "`";
+            }
+            Object value = values.get(name);
+            if (value == null) {
+                builder.append(name)
                         .append(" = null,");
             } else {
-                builder.append(o)
+                builder.append(name)
                         .append(" = '")
-                        .append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append(ColumnFilter.safeColumn(value))
                         .append("',");
             }
         }

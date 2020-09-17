@@ -5,6 +5,7 @@ package com.loror.sql;
  */
 
 public class Order implements Comparable<Order> {
+
     public static int ORDER_DESC = 0;
     public static int ORDER_ASC = 1;
 

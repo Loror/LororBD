@@ -1,7 +1,5 @@
 package com.loror.sql;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -10,11 +8,12 @@ import java.util.TreeSet;
  */
 
 public class Condition implements Comparable<Condition> {
+
     private String key;
     private String operator;
-    private String column;
+    private Object column;
     private int type;//0,and.1,or
-    private boolean quotation;
+    private boolean quotation;//是否允许库自动添加'
     private Set<Condition> conditions;
 
     public Condition(String key, String operator, Object column) {
@@ -28,11 +27,7 @@ public class Condition implements Comparable<Condition> {
     public Condition(String key, String operator, Object column, int type, boolean quotation) {
         this.key = key;
         this.operator = operator;
-        if (quotation) {
-            this.column = ColumnFilter.safeColumn(column);
-        } else {
-            this.column = column == null ? null : String.valueOf(column);
-        }
+        this.column = column;
         this.type = type;
         this.quotation = quotation;
     }
@@ -54,11 +49,11 @@ public class Condition implements Comparable<Condition> {
     }
 
     public String getColumn() {
-        return column;
+        return column == null ? null : ColumnFilter.safeColumn(column);
     }
 
-    public void setColumn(String column) {
-        this.column = column == null ? null : column.replace("'", "''");
+    public void setColumn(Object column) {
+        this.column = column;
     }
 
     public void setType(int type) {
@@ -105,12 +100,11 @@ public class Condition implements Comparable<Condition> {
             } else {
                 if (quotation) {
                     builder.append(" '");
-                } else {
-                    builder.append(" ");
-                }
-                builder.append(column);
-                if (quotation) {
+                    builder.append(ColumnFilter.safeColumn(column));
                     builder.append("'");
+                } else {
+                    builder.append(" ")
+                            .append(column);
                 }
             }
         } else {
@@ -136,6 +130,8 @@ public class Condition implements Comparable<Condition> {
         if (compare != 0) {
             return compare;
         }
-        return this.column == null ? -1 : this.column.compareTo(that.column);
+        return this.column == null ? -1 :
+                that.column == null ? 1 :
+                        String.valueOf(this.column).compareTo(String.valueOf(that.column));
     }
 }

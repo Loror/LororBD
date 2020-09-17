@@ -54,10 +54,11 @@ public class Test {
                     .get();
 
             modelResults = sqlClient.model("test as t")
-                    .select("sum(id)")
+                    .select("sum(id),max(id)")
                     .where("id", "<>", 0)
                     .groupBy("`group`")
                     .having("sum(id)", ">", 1)
+                    .having("max(id)", ">", 2)
                     .page(1, 2)
                     .get();
 

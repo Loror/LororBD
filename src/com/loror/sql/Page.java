@@ -5,6 +5,7 @@ package com.loror.sql;
  */
 
 public class Page {
+
     private int page;
     private int number;
 

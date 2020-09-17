@@ -6,7 +6,6 @@ import java.util.Map;
 public abstract class Model extends Where {
 
     protected String groupName;
-    protected String having;
 
     public Model(ConditionBuilder conditionBuilder) {
         super(conditionBuilder);
@@ -116,14 +115,7 @@ public abstract class Model extends Where {
     }
 
     public Model having(String key, String operation, Object var) {
-        if (!ColumnFilter.isFullName(key)) {
-            key = "`" + key + "`";
-        }
-        if (this.having == null) {
-            this.having = key + " " + operation + " " + var;
-        } else {
-            this.having += "," + key + " " + operation + " " + var;
-        }
+        conditionBuilder.addHaving(new Having(key, operation, var));
         return this;
     }
 
