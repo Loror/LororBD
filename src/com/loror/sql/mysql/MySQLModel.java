@@ -153,6 +153,10 @@ public class MySQLModel extends Model {
     public void save(Object entity) {
         if (entity != null) {
             if (entity instanceof ModelResult) {
+                ModelResult modelResult = (ModelResult) entity;
+                if (modelResult.getModel() == null) {
+                    modelResult.setModel(model);
+                }
                 sqlClient.nativeQuery(buildIdentification()).execute(MySQLBuilder.getInsertSql((ModelResult) entity));
             } else {
                 ModelInfo.ColumnInfo idColumn = ModelInfo.of(entity.getClass()).getId();

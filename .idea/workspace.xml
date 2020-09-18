@@ -8,6 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/Test.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +259,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600407370115</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="保存支持ModelResult">
+      <created>1600407771306</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1600407771306</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -292,10 +301,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="560" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600392116429" />
-    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1600407369515">
+    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1600407770599">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600407369515" />
+    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600407770599" />
     <state x="128" y="85" key="DiffContextDialog" timestamp="1600250133990">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -304,22 +313,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="228" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599802253661" />
-    <state width="1876" height="112" key="GridCell.Tab.0.bottom" timestamp="1600407426349">
+    <state width="1876" height="116" key="GridCell.Tab.0.bottom" timestamp="1600408941987">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="112" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600407426349" />
-    <state width="1876" height="112" key="GridCell.Tab.0.center" timestamp="1600407426349">
+    <state width="1876" height="116" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600408941987" />
+    <state width="1876" height="116" key="GridCell.Tab.0.center" timestamp="1600408941986">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="112" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600407426349" />
-    <state width="1876" height="112" key="GridCell.Tab.0.left" timestamp="1600407426348">
+    <state width="1876" height="116" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600408941986" />
+    <state width="1876" height="116" key="GridCell.Tab.0.left" timestamp="1600408941986">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="112" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600407426348" />
-    <state width="1876" height="112" key="GridCell.Tab.0.right" timestamp="1600407426349">
+    <state width="1876" height="116" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600408941986" />
+    <state width="1876" height="116" key="GridCell.Tab.0.right" timestamp="1600408941987">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="112" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600407426349" />
+    <state width="1876" height="116" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600408941987" />
     <state width="1876" height="342" key="GridCell.Tab.1.bottom" timestamp="1600235618484">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
