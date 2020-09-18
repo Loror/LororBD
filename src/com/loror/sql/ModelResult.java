@@ -129,6 +129,22 @@ public class ModelResult {
         }
     }
 
+    public void set(String name, Object value) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
+        if (name != null) {
+            Iterator<IdentityNode> iterator = data.iterator();
+            while (iterator.hasNext()) {
+                IdentityNode node = iterator.next();
+                if (name.equals(node.key)) {
+                    iterator.remove();
+                }
+            }
+            data.add(new IdentityNode(name, value));
+        }
+    }
+
     public Object get(String name) {
         if (isNull) {
             throw new NullPointerException("this result is null");
