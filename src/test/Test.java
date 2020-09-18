@@ -53,15 +53,6 @@ public class Test {
             modelResults = sqlClient.model("test left join demo on test.id = demo.tid")
                     .get();
 
-            modelResults = sqlClient.model("test as t")
-                    .select("sum(id),max(id)")
-                    .where("id", "<>", 0)
-                    .groupBy("`group`")
-                    .having("sum(id)", ">", 1)
-                    .having("max(id)", ">", 2)
-                    .page(1, 2)
-                    .get();
-
 
             System.out.println("=============================");
             for (ModelResult modelResult : modelResults) {
@@ -69,13 +60,13 @@ public class Test {
             }
             System.out.println("=============================");
 
+            List<Integer> ids = sqlClient.model("test")
+                    .select("id")
+                    .where("id", "<>", 0)
+                    .get()
+                    .filter(modelResult -> modelResult.getInt("id", 0));
 
-            modelResults = sqlClient.nativeQuery()
-                    .executeQuery("select * from test as t,demo as d");
-
-//            for (ModelResult modelResult : modelResults) {
-//                System.out.println(modelResult.object(TestTable.class));
-//            }
+            System.out.println(ids);
 
         } catch (Exception e) {
             e.printStackTrace();

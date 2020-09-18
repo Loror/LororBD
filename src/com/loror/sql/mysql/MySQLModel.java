@@ -13,7 +13,7 @@ public class MySQLModel extends Model {
     private String select = "*";
 
     public MySQLModel(String table, MySQLClient sqlClient) {
-        super(ConditionBuilder.create());
+        super(ConditionRequest.build());
         this.table = table;
         this.sqlClient = sqlClient;
     }
@@ -138,8 +138,8 @@ public class MySQLModel extends Model {
 
     @Override
     public void delete() {
-        if (conditionBuilder.getConditionCount() > 0) {
-            String sql = "delete from " + safeTable() + conditionBuilder.getConditions(true);
+        if (conditionRequest.getConditionCount() > 0) {
+            String sql = "delete from " + safeTable() + conditionRequest.getConditions(true);
             sqlClient.nativeQuery().execute(sql);
         }
     }
@@ -162,7 +162,7 @@ public class MySQLModel extends Model {
             return 0;
         }
         String sql = MySQLBuilder.getUpdateSqlNoWhere(entity, ModelInfo.of(entity.getClass()), ignoreNull)
-                + conditionBuilder.getConditionsWithoutPage(true);
+                + conditionRequest.getConditionsWithoutPage(true);
         return sqlClient.nativeQuery().executeUpdate(sql);
     }
 
@@ -172,17 +172,17 @@ public class MySQLModel extends Model {
             return 0;
         }
         String sql = MySQLBuilder.getUpdateSqlNoWhere(values, safeTable())
-                + conditionBuilder.getConditionsWithoutPage(true);
+                + conditionRequest.getConditionsWithoutPage(true);
         return sqlClient.nativeQuery().executeUpdate(sql);
     }
 
     @Override
     public int count() {
         String sql;
-        if (conditionBuilder.getConditionCount() == 0) {
+        if (conditionRequest.getConditionCount() == 0) {
             sql = "select count(1) from " + safeTable();
         } else {
-            sql = "select count(1) from " + safeTable() + conditionBuilder.getConditionsWithoutPage(true);
+            sql = "select count(1) from " + safeTable() + conditionRequest.getConditionsWithoutPage(true);
         }
         ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
         return results.size() == 0 ? 0 : results.get(0).getInt("count(1)", 0);
@@ -192,21 +192,21 @@ public class MySQLModel extends Model {
         if (groupName == null) {
             return "";
         }
-        String having = conditionBuilder.getHaving();
+        String having = conditionRequest.getHaving();
         return " group by " + groupName + (having.length() > 0 ? (" having " + having) : "");
     }
 
     @Override
     public ModelResultList get() {
-        String sql = "select " + this.select + " from " + safeTable() + conditionBuilder.getConditionsWithoutPage(true)
-                + getGroup() + (conditionBuilder.getPage() == null ? "" : " " + conditionBuilder.getPage().toString());
+        String sql = "select " + this.select + " from " + safeTable() + conditionRequest.getConditionsWithoutPage(true)
+                + getGroup() + (conditionRequest.getPage() == null ? "" : " " + conditionRequest.getPage().toString());
         return sqlClient.nativeQuery().executeQuery(sql);
     }
 
     @Override
     public ModelResult first() {
         String sql = "select " + this.select + " from " + safeTable()
-                + conditionBuilder.getConditionsWithoutPage(true) + getGroup() + " limit 0,1";
+                + conditionRequest.getConditionsWithoutPage(true) + getGroup() + " limit 0,1";
         ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
         return results.size() == 0 ? new ModelResult(true) : results.get(0);
     }

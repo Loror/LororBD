@@ -9,7 +9,7 @@ import java.util.TreeSet;
  * Created by Loror on 2018/2/8.
  */
 
-public class ConditionBuilder {
+public class ConditionRequest {
 
     private Set<Condition> conditions = new TreeSet<>();
     private Set<Having> havings = new TreeSet<>();
@@ -17,12 +17,12 @@ public class ConditionBuilder {
     private Page page;
     private boolean hasNull;
 
-    private ConditionBuilder() {
+    private ConditionRequest() {
 
     }
 
-    public static ConditionBuilder create() {
-        return new ConditionBuilder();
+    public static ConditionRequest build() {
+        return new ConditionRequest();
     }
 
     /**
@@ -51,7 +51,7 @@ public class ConditionBuilder {
     /**
      * 分页
      */
-    public ConditionBuilder withPagination(int page, int number) {
+    public ConditionRequest withPagination(int page, int number) {
         this.page = new Page(page, number);
         return this;
     }
@@ -59,7 +59,7 @@ public class ConditionBuilder {
     /**
      * 排序条件条件
      */
-    public ConditionBuilder withOrder(String key, int orderType) {
+    public ConditionRequest withOrder(String key, int orderType) {
         orders.add(new Order(key, orderType));
         return this;
     }
@@ -67,7 +67,7 @@ public class ConditionBuilder {
     /**
      * 增加条件
      */
-    public ConditionBuilder addCondition(String key, String operator, Object column) {
+    public ConditionRequest addCondition(String key, String operator, Object column) {
         return addCondition(key, operator, column, true);
     }
 
@@ -95,7 +95,7 @@ public class ConditionBuilder {
     /**
      * 增加in条件
      */
-    public ConditionBuilder addInCondition(String key, String operator, List<?> columns) {
+    public ConditionRequest addInCondition(String key, String operator, List<?> columns) {
         if (columns.size() == 1) {
             return addCondition(key, "not in".equalsIgnoreCase(operator) ? "<>" : "=", columns.get(0), true);
         } else {
@@ -106,7 +106,7 @@ public class ConditionBuilder {
     /**
      * 增加条件
      */
-    public ConditionBuilder addCondition(String key, String operator, Object column, boolean quotation) {
+    public ConditionRequest addCondition(String key, String operator, Object column, boolean quotation) {
         if (column == null) {
             hasNull = true;
         }
@@ -117,14 +117,14 @@ public class ConditionBuilder {
     /**
      * 增加条件
      */
-    public ConditionBuilder addOrCondition(String key, String operator, Object column) {
+    public ConditionRequest addOrCondition(String key, String operator, Object column) {
         return addOrCondition(key, operator, column, true);
     }
 
     /**
      * 增加in条件
      */
-    public ConditionBuilder addOrInCondition(String key, String operator, List<?> columns) {
+    public ConditionRequest addOrInCondition(String key, String operator, List<?> columns) {
         if (columns.size() == 1) {
             return addOrCondition(key, "not in".equalsIgnoreCase(operator) ? "<>" : "=", columns.get(0), true);
         } else {
@@ -135,7 +135,7 @@ public class ConditionBuilder {
     /**
      * 增加条件
      */
-    public ConditionBuilder addOrCondition(String key, String operator, Object column, boolean quotation) {
+    public ConditionRequest addOrCondition(String key, String operator, Object column, boolean quotation) {
         if (column == null) {
             hasNull = true;
         }
@@ -146,7 +146,7 @@ public class ConditionBuilder {
     /**
      * 增加条件
      */
-    public ConditionBuilder addCondition(Condition condition, boolean hasNull) {
+    public ConditionRequest addCondition(Condition condition, boolean hasNull) {
         if (hasNull) {
             this.hasNull = true;
         }
@@ -157,7 +157,7 @@ public class ConditionBuilder {
     /**
      * 增加条件
      */
-    public ConditionBuilder addHaving(Having having) {
+    public ConditionRequest addHaving(Having having) {
         havings.add(having);
         return this;
     }

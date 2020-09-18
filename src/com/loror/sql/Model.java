@@ -7,8 +7,8 @@ public abstract class Model extends Where {
 
     protected String groupName;
 
-    public Model(ConditionBuilder conditionBuilder) {
-        super(conditionBuilder);
+    public Model(ConditionRequest conditionRequest) {
+        super(conditionRequest);
     }
 
     @Override
@@ -115,12 +115,12 @@ public abstract class Model extends Where {
     }
 
     public Model having(String key, String operation, Object var) {
-        conditionBuilder.addHaving(new Having(key, operation, var));
+        conditionRequest.addHaving(new Having(key, operation, var));
         return this;
     }
 
     public Model orderBy(String key, int order) {
-        conditionBuilder.withOrder(key, order);
+        conditionRequest.withOrder(key, order);
         return this;
     }
 
@@ -131,7 +131,7 @@ public abstract class Model extends Where {
         if (size <= 0) {
             throw new IllegalArgumentException("size cannot be zero or minus");
         }
-        conditionBuilder.withPagination(page, size);
+        conditionRequest.withPagination(page, size);
         return this;
     }
 

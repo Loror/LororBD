@@ -10,10 +10,10 @@ public class Where {
         void where(Where where);
     }
 
-    protected ConditionBuilder conditionBuilder;
+    protected ConditionRequest conditionRequest;
 
-    public Where(ConditionBuilder conditionBuilder) {
-        this.conditionBuilder = conditionBuilder;
+    public Where(ConditionRequest conditionRequest) {
+        this.conditionRequest = conditionRequest;
     }
 
     public Where where(String key, Object var) {
@@ -21,7 +21,7 @@ public class Where {
     }
 
     public Where where(String key, String operation, Object var) {
-        conditionBuilder.addCondition(key, operation, var);
+        conditionRequest.addCondition(key, operation, var);
         return this;
     }
 
@@ -30,7 +30,7 @@ public class Where {
     }
 
     public Where whereOr(String key, String operation, Object var) {
-        conditionBuilder.addOrCondition(key, operation, var);
+        conditionRequest.addOrCondition(key, operation, var);
         return this;
     }
 
@@ -53,7 +53,7 @@ public class Where {
         if (vars == null || vars.size() == 0) {
             throw new IllegalArgumentException("in condition can not be empty");
         }
-        conditionBuilder.addInCondition(key, operation, vars);
+        conditionRequest.addInCondition(key, operation, vars);
         return this;
     }
 
@@ -76,7 +76,7 @@ public class Where {
         if (vars == null || vars.size() == 0) {
             throw new IllegalArgumentException("in condition can not be empty");
         }
-        conditionBuilder.addOrInCondition(key, operation, vars);
+        conditionRequest.addOrInCondition(key, operation, vars);
         return this;
     }
 
@@ -90,9 +90,9 @@ public class Where {
 
     private Where where(OnWhere onWhere, int type) {
         if (onWhere != null) {
-            Where where = new Where(ConditionBuilder.create());
+            Where where = new Where(ConditionRequest.build());
             onWhere.where(where);
-            Set<Condition> conditions = where.conditionBuilder.getConditionList();
+            Set<Condition> conditions = where.conditionRequest.getConditionList();
             if (conditions.size() > 0) {
                 Condition top = conditions.iterator().next();
                 top.setType(type);
@@ -102,7 +102,7 @@ public class Where {
                     }
                     top.addCondition(condition);
                 }
-                conditionBuilder.addCondition(top, where.conditionBuilder.isHasNull());
+                conditionRequest.addCondition(top, where.conditionRequest.isHasNull());
             }
         }
         return this;
@@ -117,6 +117,6 @@ public class Where {
 
     @Override
     public String toString() {
-        return conditionBuilder.toString();
+        return conditionRequest.toString();
     }
 }
