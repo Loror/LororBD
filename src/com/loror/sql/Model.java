@@ -5,8 +5,6 @@ import java.util.Map;
 
 public abstract class Model extends Where {
 
-    protected String groupName;
-
     public Model(ConditionRequest conditionRequest) {
         super(conditionRequest);
     }
@@ -103,9 +101,7 @@ public abstract class Model extends Where {
 
     public Model groupBy(String key) {
         if (key != null && key.length() > 0) {
-            this.groupName = ColumnFilter.isFullName(key) ?
-                    key
-                    : ("`" + key + "`");
+            conditionRequest.setGroupName(key);
         }
         return this;
     }
@@ -134,6 +130,21 @@ public abstract class Model extends Where {
         conditionRequest.withPagination(page, size);
         return this;
     }
+
+    /**
+     * 连表
+     */
+    public abstract Model join(String model, String on);
+
+    /**
+     * 左连表
+     */
+    public abstract Model leftJoin(String model, String on);
+
+    /**
+     * 右连表
+     */
+    public abstract Model rightJoin(String model, String on);
 
     /**
      * 指定字段查询

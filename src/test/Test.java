@@ -61,8 +61,9 @@ public class Test {
             System.out.println("=============================");
 
             List<Integer> ids = sqlClient.model("test")
-                    .select("id")
-                    .where("id", "<>", 0)
+                    .join("demo", "test.id=demo.tid")
+                    .select("test.id")
+                    .where("test.id", "<>", 0)
                     .get()
                     .filter(modelResult -> modelResult.getInt("id", 0));
 

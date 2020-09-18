@@ -3,27 +3,63 @@ package com.loror.sql.mysql;
 import com.loror.sql.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class MySQLModel extends Model {
 
     private MySQLClient sqlClient;
-    private String table;
+    private String model;
+    private List<Join> joins;
     private String select = "*";
 
-    public MySQLModel(String table, MySQLClient sqlClient) {
+    public MySQLModel(String model, MySQLClient sqlClient) {
         super(ConditionRequest.build());
-        this.table = table;
+        this.model = model;
         this.sqlClient = sqlClient;
     }
 
     private String safeTable() {
-        if (ColumnFilter.isFullName(table)) {
-            return table;
+        String table;
+        if (ColumnFilter.isFullName(model)) {
+            table = model;
         } else {
-            return "`" + table + "`";
+            table = "`" + model + "`";
         }
+        if (joins != null) {
+            for (Join join : joins) {
+                table += " " + join.toString();
+            }
+        }
+        return table;
+    }
+
+    @Override
+    public Model join(String model, String on) {
+        if (joins == null) {
+            joins = new ArrayList<>();
+        }
+        joins.add(new Join(0, model, on));
+        return this;
+    }
+
+    @Override
+    public Model leftJoin(String model, String on) {
+        if (joins == null) {
+            joins = new ArrayList<>();
+        }
+        joins.add(new Join(1, model, on));
+        return this;
+    }
+
+    @Override
+    public Model rightJoin(String model, String on) {
+        if (joins == null) {
+            joins = new ArrayList<>();
+        }
+        joins.add(new Join(2, model, on));
+        return this;
     }
 
     @Override
@@ -188,25 +224,17 @@ public class MySQLModel extends Model {
         return results.size() == 0 ? 0 : results.get(0).getInt("count(1)", 0);
     }
 
-    private String getGroup() {
-        if (groupName == null) {
-            return "";
-        }
-        String having = conditionRequest.getHaving();
-        return " group by " + groupName + (having.length() > 0 ? (" having " + having) : "");
-    }
-
     @Override
     public ModelResultList get() {
         String sql = "select " + this.select + " from " + safeTable() + conditionRequest.getConditionsWithoutPage(true)
-                + getGroup() + (conditionRequest.getPage() == null ? "" : " " + conditionRequest.getPage().toString());
+                + conditionRequest.getGroupBy() + (conditionRequest.getPage() == null ? "" : " " + conditionRequest.getPage().toString());
         return sqlClient.nativeQuery().executeQuery(sql);
     }
 
     @Override
     public ModelResult first() {
         String sql = "select " + this.select + " from " + safeTable()
-                + conditionRequest.getConditionsWithoutPage(true) + getGroup() + " limit 0,1";
+                + conditionRequest.getConditionsWithoutPage(true) + conditionRequest.getGroupBy() + " limit 0,1";
         ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
         return results.size() == 0 ? new ModelResult(true) : results.get(0);
     }

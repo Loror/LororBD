@@ -12,10 +12,11 @@ import java.util.TreeSet;
 public class ConditionRequest {
 
     private Set<Condition> conditions = new TreeSet<>();
-    private Set<Having> havings = new TreeSet<>();
     private Set<Order> orders = new TreeSet<>();
     private Page page;
     private boolean hasNull;
+    private String groupName;
+    private Set<Having> havings = new TreeSet<>();
 
     private ConditionRequest() {
 
@@ -155,6 +156,13 @@ public class ConditionRequest {
     }
 
     /**
+     * 设置group
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    /**
      * 增加条件
      */
     public ConditionRequest addHaving(Having having) {
@@ -177,6 +185,20 @@ public class ConditionRequest {
             }
         }
         return builder.toString();
+    }
+
+    /**
+     * 获取group
+     */
+    public String getGroupName() {
+        return groupName;
+    }
+
+    /**
+     * 获取having
+     */
+    public Set<Having> getHavings() {
+        return havings;
     }
 
     /**
@@ -232,7 +254,10 @@ public class ConditionRequest {
     /**
      * 获取having
      */
-    public String getHaving() {
+    public String getGroupBy() {
+        if (groupName == null) {
+            return "";
+        }
         StringBuilder builder = new StringBuilder();
         for (Having having : havings) {
             builder.append(having)
@@ -241,7 +266,11 @@ public class ConditionRequest {
         if (builder.length() > 0) {
             builder.delete(builder.length() - 5, builder.length());
         }
-        return builder.toString();
+        String group = ColumnFilter.isFullName(groupName) ?
+                groupName
+                : ("`" + groupName + "`");
+        String having = builder.toString();
+        return " group by " + group + (having.length() > 0 ? (" having " + having) : "");
     }
 
     @Override
