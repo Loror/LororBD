@@ -17,6 +17,7 @@ public class MySQLClient implements SQLClient {
     private OnClose onClose;//执行close方法时候调用，如果为空则执行关闭连接
     private LogListener logListener;
     private SQLCache sqlCache;
+    private QueryIdentification cacheIdentification;
 
     public MySQLClient(String url, String name, String password) {
         this.url = url;
@@ -31,6 +32,14 @@ public class MySQLClient implements SQLClient {
     private void init(String url, String name, String password) {
         close();
         try {
+            QueryIdentification identification;
+            if (cacheIdentification == null) {
+                identification = new QueryIdentification();
+                identification.setNative(true);
+            } else {
+                identification = cacheIdentification;
+                cacheIdentification = null;
+            }
             mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password) {
                 @Override
                 public void onSql(boolean connect, String sql) {
@@ -41,14 +50,16 @@ public class MySQLClient implements SQLClient {
 
                 @Override
                 public ModelResultList beforeQuery(String sql) {
-                    return sqlCache == null ? null : sqlCache.beforeQuery(sql);
+                    identification.setSql(sql);
+                    return sqlCache == null ? null : sqlCache.beforeQuery(identification);
                 }
 
                 @Override
                 public boolean execute(String sql) {
                     boolean result = super.execute(sql);
                     if (sqlCache != null) {
-                        sqlCache.onExecute(sql);
+                        identification.setSql(sql);
+                        sqlCache.onExecute(identification);
                     }
                     return result;
                 }
@@ -57,7 +68,8 @@ public class MySQLClient implements SQLClient {
                 public int executeUpdate(String sql) {
                     int result = super.executeUpdate(sql);
                     if (sqlCache != null) {
-                        sqlCache.onExecute(sql);
+                        identification.setSql(sql);
+                        sqlCache.onExecute(identification);
                     }
                     return result;
                 }
@@ -66,7 +78,8 @@ public class MySQLClient implements SQLClient {
                 public ModelResult executeByReturnKeys(String sql) {
                     ModelResult result = super.executeByReturnKeys(sql);
                     if (sqlCache != null) {
-                        sqlCache.onExecute(sql);
+                        identification.setSql(sql);
+                        sqlCache.onExecute(identification);
                     }
                     return result;
                 }
@@ -75,7 +88,8 @@ public class MySQLClient implements SQLClient {
                 public ModelResultList executeQuery(String sql) {
                     ModelResultList result = super.executeQuery(sql);
                     if (sqlCache != null) {
-                        sqlCache.onExecuteQuery(sql, result);
+                        identification.setSql(sql);
+                        sqlCache.onExecuteQuery(identification, result);
                     }
                     return result;
                 }
@@ -262,6 +276,14 @@ public class MySQLClient implements SQLClient {
 
     @Override
     public SQLDataBase nativeQuery() {
+        return mySQLDataBase;
+    }
+
+    /**
+     * 获取查询，传递查询标识
+     */
+    protected SQLDataBase nativeQuery(QueryIdentification cacheIdentification) {
+        this.cacheIdentification = cacheIdentification;
         return mySQLDataBase;
     }
 

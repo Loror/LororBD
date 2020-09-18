@@ -24,19 +24,19 @@ public class Test {
             sqlClient.setSQLCache(new SQLClient.SQLCache() {
 
                 @Override
-                public ModelResultList beforeQuery(String sql) {
-                    return cache.get(sql);
+                public ModelResultList beforeQuery(SQLClient.QueryIdentification identification) {
+                    return cache.get(identification.getSql());
                 }
 
                 @Override
-                public void onExecuteQuery(String sql, ModelResultList modelResults) {
+                public void onExecuteQuery(SQLClient.QueryIdentification identification, ModelResultList modelResults) {
                     if (modelResults != null) {
-                        cache.put(sql, modelResults);
+                        cache.put(identification.getSql(), modelResults);
                     }
                 }
 
                 @Override
-                public void onExecute(String sql) {
+                public void onExecute(SQLClient.QueryIdentification identification) {
                     cache.clear();
                 }
             });
@@ -61,7 +61,7 @@ public class Test {
             System.out.println("=============================");
 
             List<Integer> ids = sqlClient.model("test")
-                    .join("demo", "test.id=demo.tid")
+                    .join("demo", "test.id = demo.tid")
                     .select("test.id")
                     .where("test.id", "<>", 0)
                     .get()

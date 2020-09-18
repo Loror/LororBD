@@ -1,6 +1,7 @@
 package com.loror.sql;
 
 import java.io.Closeable;
+import java.util.List;
 
 public interface SQLClient extends Closeable {
 
@@ -13,11 +14,69 @@ public interface SQLClient extends Closeable {
     }
 
     interface SQLCache {
-        ModelResultList beforeQuery(String sql);
+        ModelResultList beforeQuery(QueryIdentification identification);
 
-        void onExecuteQuery(String sql, ModelResultList modelResults);
+        void onExecuteQuery(QueryIdentification identification, ModelResultList modelResults);
 
-        void onExecute(String sql);
+        void onExecute(QueryIdentification identification);
+    }
+
+    class QueryIdentification {
+
+        private String sql;
+        private boolean isNative;
+        private String model;
+        private String select;
+        private List<Join> joins;
+        private ConditionRequest conditionRequest;
+
+        public String getSql() {
+            return sql;
+        }
+
+        public void setSql(String sql) {
+            this.sql = sql;
+        }
+
+        public boolean isNative() {
+            return isNative;
+        }
+
+        public void setNative(boolean aNative) {
+            isNative = aNative;
+        }
+
+        public String getModel() {
+            return model;
+        }
+
+        public void setModel(String model) {
+            this.model = model;
+        }
+
+        public String getSelect() {
+            return select;
+        }
+
+        public void setSelect(String select) {
+            this.select = select;
+        }
+
+        public List<Join> getJoins() {
+            return joins;
+        }
+
+        public void setJoins(List<Join> joins) {
+            this.joins = joins;
+        }
+
+        public ConditionRequest getConditionRequest() {
+            return conditionRequest;
+        }
+
+        public void setConditionRequest(ConditionRequest conditionRequest) {
+            this.conditionRequest = conditionRequest;
+        }
     }
 
     /**

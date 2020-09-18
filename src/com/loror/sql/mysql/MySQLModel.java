@@ -87,6 +87,18 @@ public class MySQLModel extends Model {
     }
 
     /**
+     * 创建sql标识
+     */
+    private SQLClient.QueryIdentification buildIdentification() {
+        SQLClient.QueryIdentification identification = new SQLClient.QueryIdentification();
+        identification.setConditionRequest(conditionRequest);
+        identification.setJoins(joins);
+        identification.setSelect(select);
+        identification.setModel(model);
+        return identification;
+    }
+
+    /**
      * 插入
      */
     protected void insert(Object entity) {
@@ -98,7 +110,7 @@ public class MySQLModel extends Model {
         boolean returnId = id != null && id.isReturnKey();
         String sql = MySQLBuilder.getInsertSql(entity, modelInfo);
         if (returnId) {
-            ModelResult modelResult = sqlClient.nativeQuery().executeByReturnKeys(sql);
+            ModelResult modelResult = sqlClient.nativeQuery(buildIdentification()).executeByReturnKeys(sql);
             List<String> keys = modelResult.keys();
             if (keys.size() > 0) {
                 long num = modelResult.getLong(keys.get(0), 0);
@@ -123,7 +135,7 @@ public class MySQLModel extends Model {
                 }
             }
         } else {
-            sqlClient.nativeQuery().execute(sql);
+            sqlClient.nativeQuery(buildIdentification()).execute(sql);
         }
     }
 
@@ -135,7 +147,7 @@ public class MySQLModel extends Model {
             return;
         }
         String sql = MySQLBuilder.getUpdateSql(entity, ModelInfo.of(entity.getClass()));
-        sqlClient.nativeQuery().executeUpdate(sql);
+        sqlClient.nativeQuery(buildIdentification()).executeUpdate(sql);
     }
 
     @Override
@@ -176,20 +188,20 @@ public class MySQLModel extends Model {
     public void delete() {
         if (conditionRequest.getConditionCount() > 0) {
             String sql = "delete from " + safeTable() + conditionRequest.getConditions(true);
-            sqlClient.nativeQuery().execute(sql);
+            sqlClient.nativeQuery(buildIdentification()).execute(sql);
         }
     }
 
     @Override
     public void clear() {
         String sql = "delete from " + safeTable();
-        sqlClient.nativeQuery().execute(sql);
+        sqlClient.nativeQuery(buildIdentification()).execute(sql);
     }
 
     @Override
     public void truncate() {
         String sql = "truncate table " + safeTable();
-        sqlClient.nativeQuery().execute(sql);
+        sqlClient.nativeQuery(buildIdentification()).execute(sql);
     }
 
     @Override
@@ -199,7 +211,7 @@ public class MySQLModel extends Model {
         }
         String sql = MySQLBuilder.getUpdateSqlNoWhere(entity, ModelInfo.of(entity.getClass()), ignoreNull)
                 + conditionRequest.getConditionsWithoutPage(true);
-        return sqlClient.nativeQuery().executeUpdate(sql);
+        return sqlClient.nativeQuery(buildIdentification()).executeUpdate(sql);
     }
 
     @Override
@@ -209,7 +221,7 @@ public class MySQLModel extends Model {
         }
         String sql = MySQLBuilder.getUpdateSqlNoWhere(values, safeTable())
                 + conditionRequest.getConditionsWithoutPage(true);
-        return sqlClient.nativeQuery().executeUpdate(sql);
+        return sqlClient.nativeQuery(buildIdentification()).executeUpdate(sql);
     }
 
     @Override
@@ -220,7 +232,7 @@ public class MySQLModel extends Model {
         } else {
             sql = "select count(1) from " + safeTable() + conditionRequest.getConditionsWithoutPage(true);
         }
-        ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
+        ModelResultList results = sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
         return results.size() == 0 ? 0 : results.get(0).getInt("count(1)", 0);
     }
 
@@ -228,14 +240,14 @@ public class MySQLModel extends Model {
     public ModelResultList get() {
         String sql = "select " + this.select + " from " + safeTable() + conditionRequest.getConditionsWithoutPage(true)
                 + conditionRequest.getGroupBy() + (conditionRequest.getPage() == null ? "" : " " + conditionRequest.getPage().toString());
-        return sqlClient.nativeQuery().executeQuery(sql);
+        return sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
     }
 
     @Override
     public ModelResult first() {
         String sql = "select " + this.select + " from " + safeTable()
                 + conditionRequest.getConditionsWithoutPage(true) + conditionRequest.getGroupBy() + " limit 0,1";
-        ModelResultList results = sqlClient.nativeQuery().executeQuery(sql);
+        ModelResultList results = sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
         return results.size() == 0 ? new ModelResult(true) : results.get(0);
     }
 }
