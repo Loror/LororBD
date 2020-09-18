@@ -36,7 +36,7 @@ public class ModelResult {
             return null;
         }
         ModelInfo modelInfo = ModelInfo.of(model.getClass());
-        ModelResult modelResult = new ModelResult(false);
+        ModelResult modelResult = new ModelResult();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
             field.setAccessible(true);
