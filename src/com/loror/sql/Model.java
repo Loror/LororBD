@@ -1,7 +1,6 @@
 package com.loror.sql;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class Model extends Where {
 
@@ -189,7 +188,7 @@ public abstract class Model extends Where {
     /**
      * 修改
      */
-    public abstract int update(Map<String, Object> values);
+    public abstract int update(ModelResult values);
 
     /**
      * 条件计数

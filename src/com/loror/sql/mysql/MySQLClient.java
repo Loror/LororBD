@@ -77,6 +77,7 @@ public class MySQLClient implements SQLClient {
                 @Override
                 public ModelResult executeByReturnKeys(String sql) {
                     ModelResult result = super.executeByReturnKeys(sql);
+                    result.setModel(identification.getModel());
                     if (sqlCache != null) {
                         identification.setSql(sql);
                         sqlCache.onExecute(identification);
@@ -86,12 +87,15 @@ public class MySQLClient implements SQLClient {
 
                 @Override
                 public ModelResultList executeQuery(String sql) {
-                    ModelResultList result = super.executeQuery(sql);
+                    ModelResultList results = super.executeQuery(sql);
+                    for (ModelResult result : results) {
+                        result.setModel(identification.getModel());
+                    }
                     if (sqlCache != null) {
                         identification.setSql(sql);
-                        sqlCache.onExecuteQuery(identification, result);
+                        sqlCache.onExecuteQuery(identification, results);
                     }
-                    return result;
+                    return results;
                 }
             };
         } catch (SQLException | ClassNotFoundException e) {

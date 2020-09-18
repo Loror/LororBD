@@ -2,6 +2,7 @@ package com.loror.sql.mysql;
 
 import com.loror.sql.ColumnFilter;
 import com.loror.sql.ModelInfo;
+import com.loror.sql.ModelResult;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -124,13 +125,12 @@ public class MySQLBuilder {
     /**
      * 获得更新语句
      */
-    public static String getUpdateSqlNoWhere(Map<String, Object> values, String table) {
+    public static String getUpdateSqlNoWhere(ModelResult values, String table) {
         StringBuilder builder = new StringBuilder();
         builder.append("update ")
                 .append(table)
                 .append(" set ");
-        for (String name : values.keySet()) {
-            Object value = values.get(name);
+        values.forEach((name, value) -> {
             if (!ColumnFilter.isFullName(name)) {
                 name = "`" + name + "`";
             }
@@ -143,7 +143,7 @@ public class MySQLBuilder {
                         .append(ColumnFilter.safeColumn(value))
                         .append("',");
             }
-        }
+        });
         builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
     }
@@ -188,6 +188,45 @@ public class MySQLBuilder {
         keys.deleteCharAt(keys.length() - 1);
         values.deleteCharAt(values.length() - 1);
         return "insert into " + modelInfo.getSafeTableName() + "(" + keys.toString() + ")" + " values " + "(" + values.toString() + ")";
+    }
+
+    /**
+     * 获得插入语句
+     */
+    public static String getInsertSql(ModelResult entity) {
+        if (entity.getModel() == null) {
+            throw new IllegalArgumentException("model in ModelResult is not define");
+        }
+        HashMap<String, String> columns = new HashMap<>();
+        entity.forEach((key, value) -> {
+            String safeName;
+            if (!ColumnFilter.isFullName(key)) {
+                safeName = "`" + key + "`";
+            } else {
+                safeName = key;
+            }
+            columns.put(safeName, ColumnFilter.getColumn(key, value, null));
+        });
+        StringBuilder keys = new StringBuilder();
+        StringBuilder values = new StringBuilder();
+        for (String o : columns.keySet()) {
+            keys.append(o)
+                    .append(",");
+            if (columns.get(o) == null) {
+                values.append("null,");
+            } else {
+                values.append("'")
+                        .append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append("',");
+            }
+        }
+        keys.deleteCharAt(keys.length() - 1);
+        values.deleteCharAt(values.length() - 1);
+        String model = entity.getModel();
+        if (!ColumnFilter.isFullName(model)) {
+            model = "`" + model + "`";
+        }
+        return "insert into " + model + "(" + keys.toString() + ")" + " values " + "(" + values.toString() + ")";
     }
 
     /**

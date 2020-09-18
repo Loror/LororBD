@@ -153,23 +153,27 @@ public class MySQLModel extends Model {
     @Override
     public void save(Object entity) {
         if (entity != null) {
-            ModelInfo.ColumnInfo idColumn = ModelInfo.of(entity.getClass()).getId();
-            if (idColumn == null) {
-                insert(entity);
+            if (entity instanceof ModelResult) {
+                sqlClient.nativeQuery(buildIdentification()).execute(MySQLBuilder.getInsertSql((ModelResult) entity));
             } else {
-                long id = 0;
-                Field field = idColumn.getField();
-                field.setAccessible(true);
-                try {
-                    Object var = field.get(entity);
-                    id = var == null ? 0 : Long.parseLong(String.valueOf(var));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                if (id == 0) {
+                ModelInfo.ColumnInfo idColumn = ModelInfo.of(entity.getClass()).getId();
+                if (idColumn == null) {
                     insert(entity);
                 } else {
-                    updateById(entity);
+                    long id = 0;
+                    Field field = idColumn.getField();
+                    field.setAccessible(true);
+                    try {
+                        Object var = field.get(entity);
+                        id = var == null ? 0 : Long.parseLong(String.valueOf(var));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    if (id == 0) {
+                        insert(entity);
+                    } else {
+                        updateById(entity);
+                    }
                 }
             }
         }
@@ -215,7 +219,7 @@ public class MySQLModel extends Model {
     }
 
     @Override
-    public int update(Map<String, Object> values) {
+    public int update(ModelResult values) {
         if (values == null) {
             return 0;
         }

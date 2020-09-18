@@ -6,14 +6,18 @@ import java.util.*;
 
 public class ModelResult {
 
+    public interface OnForEach {
+        void item(String key, Object value);
+    }
+
     /**
      * 保证data有序且可重复
      */
     protected static class IdentityNode {
         private final String key;
-        private final String value;
+        private final Object value;
 
-        private IdentityNode(String key, String value) {
+        private IdentityNode(String key, Object value) {
             this.key = key;
             this.value = value;
         }
@@ -24,7 +28,31 @@ public class ModelResult {
         }
     }
 
+    /**
+     * model对象获得ModelResult
+     */
+    public static ModelResult fromModel(Object model) {
+        if (model == null) {
+            return null;
+        }
+        ModelInfo modelInfo = ModelInfo.of(model.getClass());
+        ModelResult modelResult = new ModelResult(false);
+        for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
+            Field field = columnInfo.getField();
+            field.setAccessible(true);
+            try {
+                Object value = field.get(model);
+                modelResult.add(columnInfo.getName(), value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return modelResult;
+    }
+
     private final boolean isNull;
+    private String model;
+    private final List<IdentityNode> data = new LinkedList<>();
 
     public ModelResult() {
         this(false);
@@ -38,11 +66,13 @@ public class ModelResult {
         return isNull;
     }
 
-    public interface OnForEach {
-        void item(String key, String value);
+    public void setModel(String model) {
+        this.model = model;
     }
 
-    private final List<IdentityNode> data = new LinkedList<>();
+    public String getModel() {
+        return model;
+    }
 
     public void forEach(OnForEach onForEach) {
         if (isNull) {
@@ -66,11 +96,11 @@ public class ModelResult {
         return keys;
     }
 
-    public List<String> values(String name) {
+    public List<Object> values(String name) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
-        List<String> values = new ArrayList<>(data.size());
+        List<Object> values = new ArrayList<>(data.size());
         if (name != null) {
             for (IdentityNode item : data) {
                 if (name.equals(item.key)) {
@@ -90,7 +120,7 @@ public class ModelResult {
         }
     }
 
-    public void add(String name, String value) {
+    public void add(String name, Object value) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
@@ -99,7 +129,7 @@ public class ModelResult {
         }
     }
 
-    public String get(String name) {
+    public Object get(String name) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
@@ -113,13 +143,18 @@ public class ModelResult {
         return null;
     }
 
+    public String getString(String name) {
+        Object value = get(name);
+        return value == null ? null : String.valueOf(value);
+    }
+
     public int getInt(String name, int defaultValue) {
-        String value = get(name);
+        String value = getString(name);
         return value == null ? defaultValue : Integer.parseInt(value);
     }
 
     public long getLong(String name, long defaultValue) {
-        String value = get(name);
+        String value = getString(name);
         return value == null ? defaultValue : Long.parseLong(value);
     }
 
@@ -157,7 +192,7 @@ public class ModelResult {
                 } catch (NoSuchFieldException e) {
                     continue;
                 }
-                String value = item.value;
+                Object value = item.value;
                 field.setAccessible(true);
                 setField(entity, field, value);
             }
@@ -191,7 +226,7 @@ public class ModelResult {
             if (node == null) {
                 continue;
             }
-            String value = node.value;
+            Object value = node.value;
             Field field = columnInfo.getField();
             field.setAccessible(true);
             setField(entity, field, value);
@@ -202,8 +237,9 @@ public class ModelResult {
     /**
      * field设置值
      */
-    private void setField(Object obj, Field field, String value) {
-        if (value != null) {
+    private void setField(Object obj, Field field, Object var) {
+        if (var != null) {
+            String value = String.valueOf(var);
             Class<?> fieldType = field.getType();
             try {
                 if (fieldType == int.class || fieldType == Integer.class) {

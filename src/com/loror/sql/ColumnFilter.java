@@ -9,11 +9,15 @@ public class ColumnFilter {
         if (var != null) {
             return String.valueOf(var);
         } else {
-            String defaultValue = column.getDefaultValue();
-            if (column.isNotNull() && defaultValue == null) {
-                throw new NullPointerException("column " + name + " can not be null");
+            if (column != null) {
+                String defaultValue = column.getDefaultValue();
+                if (column.isNotNull() && defaultValue == null) {
+                    throw new NullPointerException("column " + name + " can not be null");
+                }
+                return defaultValue;
+            } else {
+                return null;
             }
-            return defaultValue;
         }
     }
 
