@@ -113,9 +113,9 @@ public class MySQLBuilder {
                         .append(" = null,");
             } else {
                 builder.append(o)
-                        .append(" = '")
+                        .append(" = ")
                         .append(ColumnFilter.safeColumn(columns.get(o)))
-                        .append("',");
+                        .append(",");
             }
         }
         builder.deleteCharAt(builder.length() - 1);
@@ -139,9 +139,9 @@ public class MySQLBuilder {
                         .append(" = null,");
             } else {
                 builder.append(name)
-                        .append(" = '")
+                        .append(" = ")
                         .append(ColumnFilter.safeColumn(value))
-                        .append("',");
+                        .append(",");
             }
         });
         builder.deleteCharAt(builder.length() - 1);
@@ -180,9 +180,8 @@ public class MySQLBuilder {
             if (columns.get(o) == null) {
                 values.append("null,");
             } else {
-                values.append("'")
-                        .append(ColumnFilter.safeColumn(columns.get(o)))
-                        .append("',");
+                values.append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append(",");
             }
         }
         keys.deleteCharAt(keys.length() - 1);
@@ -215,9 +214,8 @@ public class MySQLBuilder {
             if (columns.get(o) == null) {
                 values.append("null,");
             } else {
-                values.append("'")
-                        .append(ColumnFilter.safeColumn(columns.get(o)))
-                        .append("',");
+                values.append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append(",");
             }
         }
         keys.deleteCharAt(keys.length() - 1);
@@ -258,9 +256,9 @@ public class MySQLBuilder {
                         .append(" is null and ");
             } else {
                 builder.append(o)
-                        .append(" = '")
+                        .append(" = ")
                         .append(ColumnFilter.safeColumn(columns.get(o)))
-                        .append("' and ");
+                        .append(" and ");
             }
         }
         return builder.toString().substring(0, builder.toString().length() - 5);

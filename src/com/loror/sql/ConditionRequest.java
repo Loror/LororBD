@@ -81,9 +81,7 @@ public class ConditionRequest {
         for (int i = 0; i < columns.size(); i++) {
             Object column = columns.get(i);
             if (column != null) {
-                builder.append("'")
-                        .append(ColumnFilter.safeColumn(columns.get(i)))
-                        .append("'");
+                builder.append(ColumnFilter.safeColumn(columns.get(i)));
                 if (i != columns.size() - 1) {
                     builder.append(",");
                 }
@@ -107,11 +105,11 @@ public class ConditionRequest {
     /**
      * 增加条件
      */
-    public ConditionRequest addCondition(String key, String operator, Object column, boolean quotation) {
+    public ConditionRequest addCondition(String key, String operator, Object column, boolean unsafe) {
         if (column == null) {
             hasNull = true;
         }
-        conditions.add(new Condition(key, operator, column, 0, quotation));
+        conditions.add(new Condition(key, operator, unsafe ? column : SafeColumn.of(column), 0));
         return this;
     }
 
@@ -136,11 +134,11 @@ public class ConditionRequest {
     /**
      * 增加条件
      */
-    public ConditionRequest addOrCondition(String key, String operator, Object column, boolean quotation) {
+    public ConditionRequest addOrCondition(String key, String operator, Object column, boolean unsafe) {
         if (column == null) {
             hasNull = true;
         }
-        conditions.add(new Condition(key, operator, column, 1, quotation));
+        conditions.add(new Condition(key, operator, unsafe ? column : SafeColumn.of(column), 1));
         return this;
     }
 

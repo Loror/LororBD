@@ -26,7 +26,7 @@ abstract class MySQLDataBase implements SQLDataBase {
     }
 
     public PreparedStatement getPst(String sql, boolean returnKey) throws SQLException {
-        if (conn == null) {
+        if (conn == null || conn.isClosed()) {
             return null;
         }
         onSql(true, sql);
@@ -131,9 +131,18 @@ abstract class MySQLDataBase implements SQLDataBase {
     }
 
     public void close() throws SQLException {
-        if (conn != null) {
+        if (conn != null && !conn.isClosed()) {
             conn.close();
             conn = null;
         }
+    }
+
+    public boolean isClosed() {
+        try {
+            return conn == null || conn.isClosed();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

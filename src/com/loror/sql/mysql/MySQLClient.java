@@ -120,7 +120,7 @@ public class MySQLClient implements SQLClient {
 
     @Override
     public void reStart() {
-        if (this.mySQLDataBase == null) {
+        if (this.mySQLDataBase == null || this.mySQLDataBase.isClosed()) {
             init(url, name, password);
         }
     }
@@ -143,7 +143,7 @@ public class MySQLClient implements SQLClient {
 
     @Override
     public boolean isClosed() {
-        return this.mySQLDataBase == null;
+        return this.mySQLDataBase == null || this.mySQLDataBase.isClosed();
     }
 
     @Override
@@ -230,7 +230,7 @@ public class MySQLClient implements SQLClient {
                     String defaultValue = columnInfo.getDefaultValue();
                     if (defaultValue != null && defaultValue.length() > 0) {
                         mySQLDataBase.execute("update " + modelInfo.getSafeTableName() + " set `" + newColumnName +
-                                "` = '" + ColumnFilter.safeColumn(defaultValue) + "'");
+                                "` = " + ColumnFilter.safeColumn(defaultValue) + "");
                     }
                 }
             }

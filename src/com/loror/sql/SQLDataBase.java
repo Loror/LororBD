@@ -11,4 +11,6 @@ public interface SQLDataBase {
     int executeUpdate(String sql);
 
     void close() throws Exception;
+
+    boolean isClosed();
 }

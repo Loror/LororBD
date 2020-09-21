@@ -13,7 +13,6 @@ public class Condition implements Comparable<Condition> {
     private String operator;
     private Object column;
     private int type;//0,and.1,or
-    private boolean quotation;//是否允许库自动添加'
     private Set<Condition> conditions;
 
     public Condition(String key, String operator, Object column) {
@@ -21,15 +20,10 @@ public class Condition implements Comparable<Condition> {
     }
 
     public Condition(String key, String operator, Object column, int type) {
-        this(key, operator, column, type, true);
-    }
-
-    public Condition(String key, String operator, Object column, int type, boolean quotation) {
         this.key = key;
         this.operator = operator;
         this.column = column;
         this.type = type;
-        this.quotation = quotation;
     }
 
     public String getKey() {
@@ -49,7 +43,7 @@ public class Condition implements Comparable<Condition> {
     }
 
     public String getColumn() {
-        return column == null ? null : ColumnFilter.safeColumn(column);
+        return column == null ? null : column.toString();
     }
 
     public void setColumn(Object column) {
@@ -98,14 +92,8 @@ public class Condition implements Comparable<Condition> {
             if (column == null) {
                 builder.append(" null");
             } else {
-                if (quotation) {
-                    builder.append(" '");
-                    builder.append(ColumnFilter.safeColumn(column));
-                    builder.append("'");
-                } else {
-                    builder.append(" ")
-                            .append(column);
-                }
+                builder.append(" ");
+                builder.append(ColumnFilter.safeColumn(column));
             }
         } else {
             builder.append(" ?");

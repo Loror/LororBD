@@ -28,7 +28,13 @@ public class ColumnFilter {
         if (column == null) {
             return null;
         }
-        return column.toString().replace("'", "''");
+        if (column instanceof Number) {
+            return column.toString();
+        }
+        if (column instanceof SafeColumn) {
+            return column.toString();
+        }
+        return "'" + column.toString().replace("'", "''") + "'";
     }
 
     /**
