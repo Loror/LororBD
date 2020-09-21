@@ -111,25 +111,27 @@ public class ModelResult {
         return values;
     }
 
-    public void addAll(ModelResult modelResult) {
+    public ModelResult addAll(ModelResult modelResult) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
         if (modelResult != null) {
             data.addAll(modelResult.data);
         }
+        return this;
     }
 
-    public void add(String name, Object value) {
+    public ModelResult add(String name, Object value) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
         if (name != null) {
             data.add(new IdentityNode(name, value));
         }
+        return this;
     }
 
-    public void set(String name, Object value) {
+    public ModelResult set(String name, Object value) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
@@ -143,6 +145,7 @@ public class ModelResult {
             }
             data.add(new IdentityNode(name, value));
         }
+        return this;
     }
 
     public Object get(String name) {
