@@ -6,7 +6,6 @@ import com.loror.sql.ModelResult;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MySQLBuilder {
 
@@ -97,7 +96,7 @@ public class MySQLBuilder {
                     if (ignoreNull && object == null) {
                         continue;
                     }
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(columnInfo.getName(), object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -114,7 +113,7 @@ public class MySQLBuilder {
             } else {
                 builder.append(o)
                         .append(" = ")
-                        .append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append(ColumnFilter.safeValue(columns.get(o)))
                         .append(",");
             }
         }
@@ -140,7 +139,7 @@ public class MySQLBuilder {
             } else {
                 builder.append(name)
                         .append(" = ")
-                        .append(ColumnFilter.safeColumn(value))
+                        .append(ColumnFilter.safeValue(value))
                         .append(",");
             }
         });
@@ -166,7 +165,7 @@ public class MySQLBuilder {
                         }
                     }
                 } else {
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(columnInfo.getName(), object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -180,7 +179,7 @@ public class MySQLBuilder {
             if (columns.get(o) == null) {
                 values.append("null,");
             } else {
-                values.append(ColumnFilter.safeColumn(columns.get(o)))
+                values.append(ColumnFilter.safeValue(columns.get(o)))
                         .append(",");
             }
         }
@@ -204,7 +203,7 @@ public class MySQLBuilder {
             } else {
                 safeName = key;
             }
-            columns.put(safeName, ColumnFilter.getColumn(key, value, null));
+            columns.put(safeName, ColumnFilter.getValue(key, value, null));
         });
         StringBuilder keys = new StringBuilder();
         StringBuilder values = new StringBuilder();
@@ -214,7 +213,7 @@ public class MySQLBuilder {
             if (columns.get(o) == null) {
                 values.append("null,");
             } else {
-                values.append(ColumnFilter.safeColumn(columns.get(o)))
+                values.append(ColumnFilter.safeValue(columns.get(o)))
                         .append(",");
             }
         }
@@ -240,7 +239,7 @@ public class MySQLBuilder {
                 if (columnInfo.isPrimaryKey()) {
                     columns.put(columnInfo.getSafeName(), String.valueOf(object));
                 } else {
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getColumn(columnInfo.getName(), object, columnInfo));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(columnInfo.getName(), object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -257,7 +256,7 @@ public class MySQLBuilder {
             } else {
                 builder.append(o)
                         .append(" = ")
-                        .append(ColumnFilter.safeColumn(columns.get(o)))
+                        .append(ColumnFilter.safeValue(columns.get(o)))
                         .append(" and ");
             }
         }

@@ -1,15 +1,15 @@
 package com.loror.sql;
 
-public class SafeColumn {
+public class UnChangeValue {
 
     private final Object value;
 
-    private SafeColumn(Object value) {
+    private UnChangeValue(Object value) {
         this.value = value;
     }
 
-    public static SafeColumn of(Object value) {
-        return value == null ? null : new SafeColumn(value);
+    public static UnChangeValue of(Object value) {
+        return value == null ? null : new UnChangeValue(value);
     }
 
     public Object getValue() {

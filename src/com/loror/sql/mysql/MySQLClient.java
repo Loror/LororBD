@@ -230,7 +230,7 @@ public class MySQLClient implements SQLClient {
                     String defaultValue = columnInfo.getDefaultValue();
                     if (defaultValue != null && defaultValue.length() > 0) {
                         mySQLDataBase.execute("update " + modelInfo.getSafeTableName() + " set `" + newColumnName +
-                                "` = " + ColumnFilter.safeColumn(defaultValue) + "");
+                                "` = " + ColumnFilter.safeValue(defaultValue) + "");
                     }
                 }
             }

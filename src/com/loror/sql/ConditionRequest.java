@@ -81,7 +81,7 @@ public class ConditionRequest {
         for (int i = 0; i < columns.size(); i++) {
             Object column = columns.get(i);
             if (column != null) {
-                builder.append(ColumnFilter.safeColumn(columns.get(i)));
+                builder.append(ColumnFilter.safeValue(columns.get(i)));
                 if (i != columns.size() - 1) {
                     builder.append(",");
                 }
@@ -109,7 +109,7 @@ public class ConditionRequest {
         if (column == null) {
             hasNull = true;
         }
-        conditions.add(new Condition(key, operator, unsafe ? column : SafeColumn.of(column), 0));
+        conditions.add(new Condition(key, operator, unsafe ? column : UnChangeValue.of(column), 0));
         return this;
     }
 
@@ -138,7 +138,7 @@ public class ConditionRequest {
         if (column == null) {
             hasNull = true;
         }
-        conditions.add(new Condition(key, operator, unsafe ? column : SafeColumn.of(column), 1));
+        conditions.add(new Condition(key, operator, unsafe ? column : UnChangeValue.of(column), 1));
         return this;
     }
 

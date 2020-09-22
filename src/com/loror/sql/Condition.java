@@ -93,7 +93,7 @@ public class Condition implements Comparable<Condition> {
                 builder.append(" null");
             } else {
                 builder.append(" ");
-                builder.append(ColumnFilter.safeColumn(column));
+                builder.append(ColumnFilter.safeValue(column));
             }
         } else {
             builder.append(" ?");

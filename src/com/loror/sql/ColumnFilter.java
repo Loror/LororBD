@@ -3,9 +3,9 @@ package com.loror.sql;
 public class ColumnFilter {
 
     /**
-     * 获取Column
+     * 获取value
      */
-    public static String getColumn(String name, Object var, ModelInfo.ColumnInfo column) {
+    public static String getValue(String name, Object var, ModelInfo.ColumnInfo column) {
         if (var != null) {
             return String.valueOf(var);
         } else {
@@ -24,17 +24,14 @@ public class ColumnFilter {
     /**
      * 安全处理
      */
-    public static String safeColumn(Object column) {
-        if (column == null) {
+    public static String safeValue(Object var) {
+        if (var == null) {
             return null;
         }
-        if (column instanceof Number) {
-            return column.toString();
+        if (var instanceof Number || var instanceof UnChangeValue) {
+            return var.toString();
         }
-        if (column instanceof SafeColumn) {
-            return column.toString();
-        }
-        return "'" + column.toString().replace("'", "''") + "'";
+        return "'" + var.toString().replace("'", "''") + "'";
     }
 
     /**
