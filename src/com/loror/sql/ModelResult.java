@@ -6,10 +6,6 @@ import java.util.*;
 
 public class ModelResult {
 
-    public interface OnForEach {
-        void item(String key, Object value);
-    }
-
     /**
      * 保证data有序且可重复
      */
@@ -66,8 +62,9 @@ public class ModelResult {
         return isNull;
     }
 
-    public void setModel(String model) {
+    public ModelResult setModel(String model) {
         this.model = model;
+        return this;
     }
 
     public String getModel() {
@@ -85,17 +82,81 @@ public class ModelResult {
         }
     }
 
+    /**
+     * 获取所有键，不同名
+     */
     public List<String> keys() {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
         List<String> keys = new ArrayList<>(data.size());
         for (IdentityNode item : data) {
-            keys.add(item.key);
+            if (!keys.contains(item.key)) {
+                keys.add(item.key);
+            }
         }
         return keys;
     }
 
+    public ModelResult addAll(ModelResult modelResult) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
+        if (modelResult != null) {
+            data.addAll(modelResult.data);
+        }
+        return this;
+    }
+
+    /**
+     * 添加元素
+     */
+    public ModelResult add(String name, Object value) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
+        if (name != null) {
+            data.add(new IdentityNode(name.intern(), value));
+        }
+        return this;
+    }
+
+    /**
+     * 设置元素，移除同名键
+     */
+    public ModelResult set(String name, Object value) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
+        if (name != null) {
+            remove(name);
+            data.add(new IdentityNode(name, value));
+        }
+        return this;
+    }
+
+    /**
+     * 移除
+     */
+    public ModelResult remove(String name) {
+        if (isNull) {
+            throw new NullPointerException("this result is null");
+        }
+        if (name != null) {
+            Iterator<IdentityNode> iterator = data.iterator();
+            while (iterator.hasNext()) {
+                IdentityNode node = iterator.next();
+                if (name.equals(node.key)) {
+                    iterator.remove();
+                }
+            }
+        }
+        return this;
+    }
+
+    /**
+     * 获取该键所有元素
+     */
     public List<Object> values(String name) {
         if (isNull) {
             throw new NullPointerException("this result is null");
@@ -111,43 +172,9 @@ public class ModelResult {
         return values;
     }
 
-    public ModelResult addAll(ModelResult modelResult) {
-        if (isNull) {
-            throw new NullPointerException("this result is null");
-        }
-        if (modelResult != null) {
-            data.addAll(modelResult.data);
-        }
-        return this;
-    }
-
-    public ModelResult add(String name, Object value) {
-        if (isNull) {
-            throw new NullPointerException("this result is null");
-        }
-        if (name != null) {
-            data.add(new IdentityNode(name, value));
-        }
-        return this;
-    }
-
-    public ModelResult set(String name, Object value) {
-        if (isNull) {
-            throw new NullPointerException("this result is null");
-        }
-        if (name != null) {
-            Iterator<IdentityNode> iterator = data.iterator();
-            while (iterator.hasNext()) {
-                IdentityNode node = iterator.next();
-                if (name.equals(node.key)) {
-                    iterator.remove();
-                }
-            }
-            data.add(new IdentityNode(name, value));
-        }
-        return this;
-    }
-
+    /**
+     * 获取该键首个元素
+     */
     public Object get(String name) {
         if (isNull) {
             throw new NullPointerException("this result is null");
@@ -187,6 +214,9 @@ public class ModelResult {
         }
     }
 
+    /**
+     * 转对象，@Table对象按照@Column赋值；普通对象按照变量名赋值
+     */
     public <T> T object(Class<T> type) {
         if (type == null || isNull) {
             return null;
@@ -281,5 +311,9 @@ public class ModelResult {
     @Override
     public String toString() {
         return data.toString();
+    }
+
+    public interface OnForEach {
+        void item(String key, Object value);
     }
 }

@@ -5,14 +5,9 @@ import java.util.List;
 
 public class ModelResultList extends ArrayList<ModelResult> {
 
-    public interface OnFilter<T> {
-        T item(ModelResult modelResult);
-    }
-
-    public interface OnForEach {
-        void item(ModelResult modelResult);
-    }
-
+    /**
+     * 转对象List，@Table对象按照@Column赋值；普通对象按照变量名赋值
+     */
     public <T> List<T> list(Class<T> type) {
         List<T> list = new ArrayList<>();
         for (ModelResult modelResult : this) {
@@ -37,5 +32,13 @@ public class ModelResultList extends ArrayList<ModelResult> {
             }
         }
         return list;
+    }
+
+    public interface OnFilter<T> {
+        T item(ModelResult modelResult);
+    }
+
+    public interface OnForEach {
+        void item(ModelResult modelResult);
     }
 }
