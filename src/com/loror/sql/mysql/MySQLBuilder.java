@@ -159,7 +159,7 @@ public class MySQLBuilder {
      * 获得插入语句
      */
     public static String getInsertSql(Object entity, ModelInfo modelInfo) {
-        HashMap<String, String> columns = new HashMap<>();
+        HashMap<String, Object> columns = new HashMap<>();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
             field.setAccessible(true);
