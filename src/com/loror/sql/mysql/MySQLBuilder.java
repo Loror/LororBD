@@ -6,6 +6,8 @@ import com.loror.sql.ModelResult;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MySQLBuilder {
 
@@ -94,7 +96,7 @@ public class MySQLBuilder {
      * 获得更新语句
      */
     public static String getUpdateSqlNoWhere(Object entity, ModelInfo modelInfo, boolean ignoreNull) {
-        HashMap<String, String> columns = new HashMap<>();
+        Map<String, Object> columns = new LinkedHashMap<>();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
             field.setAccessible(true);
@@ -159,36 +161,39 @@ public class MySQLBuilder {
      * 获得插入语句
      */
     public static String getInsertSql(Object entity, ModelInfo modelInfo) {
-        HashMap<String, Object> columns = new HashMap<>();
+        StringBuilder keys = new StringBuilder();
+        StringBuilder values = new StringBuilder();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
             field.setAccessible(true);
             try {
+                String name = null;
+                Object var = null;
                 Object object = field.get(entity);
                 if (columnInfo.isPrimaryKey()) {
                     if (object != null) {
                         long idValue = Long.parseLong(object.toString());
                         if (idValue > 0) {
-                            columns.put(columnInfo.getSafeName(), object.toString());
+                            name = columnInfo.getSafeName();
+                            var = object;
                         }
                     }
                 } else {
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(object, columnInfo));
+                    name = columnInfo.getSafeName();
+                    var = ColumnFilter.getValue(object, columnInfo);
+                }
+                if (name != null) {
+                    keys.append(name)
+                            .append(",");
+                    if (var == null) {
+                        values.append("null,");
+                    } else {
+                        values.append(ColumnFilter.safeValue(var))
+                                .append(",");
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
-            }
-        }
-        StringBuilder keys = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-        for (String o : columns.keySet()) {
-            keys.append(o)
-                    .append(",");
-            if (columns.get(o) == null) {
-                values.append("null,");
-            } else {
-                values.append(ColumnFilter.safeValue(columns.get(o)))
-                        .append(",");
             }
         }
         keys.deleteCharAt(keys.length() - 1);
