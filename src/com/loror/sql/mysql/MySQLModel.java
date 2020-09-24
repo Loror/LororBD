@@ -166,13 +166,11 @@ public class MySQLModel extends Model {
                 if (modelResult.getModel() == null) {
                     modelResult.setModel(model);
                 }
-                sqlClient.nativeQuery(buildIdentification()).execute(MySQLBuilder.getInsertSql((ModelResult) entity));
+                sqlClient.nativeQuery(buildIdentification()).execute(MySQLBuilder.getInsertSql(modelResult));
             } else {
                 ModelInfo.ColumnInfo idColumn = ModelInfo.of(entity.getClass()).getId();
-                if (idColumn == null) {
-                    insert(entity);
-                } else {
-                    long id = 0;
+                long id = 0;
+                if (idColumn != null) {
                     Field field = idColumn.getField();
                     field.setAccessible(true);
                     try {
@@ -181,11 +179,11 @@ public class MySQLModel extends Model {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    if (id == 0) {
-                        insert(entity);
-                    } else {
-                        updateById(entity);
-                    }
+                }
+                if (id == 0) {
+                    insert(entity);
+                } else {
+                    updateById(entity);
                 }
             }
         }
@@ -205,6 +203,39 @@ public class MySQLModel extends Model {
         if (conditionRequest.getConditionCount() > 0) {
             String sql = "delete from " + safeTable() + conditionRequest.getConditions(true);
             sqlClient.nativeQuery(buildIdentification()).execute(sql);
+        }
+    }
+
+    @Override
+    public void delete(Object entity) {
+        if (entity != null) {
+            if (entity instanceof ModelResult) {
+                ModelResult modelResult = (ModelResult) entity;
+                if (modelResult.getModel() == null) {
+                    modelResult.setModel(model);
+                }
+                sqlClient.nativeQuery(buildIdentification()).execute(MySQLBuilder.getDeleteSql(modelResult));
+            } else {
+                ModelInfo modelInfo = ModelInfo.of(entity.getClass());
+                ModelInfo.ColumnInfo idColumn = modelInfo.getId();
+                long id = 0;
+                if (idColumn != null) {
+                    Field field = idColumn.getField();
+                    field.setAccessible(true);
+                    try {
+                        Object var = field.get(entity);
+                        id = var == null ? 0 : Long.parseLong(String.valueOf(var));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (id == 0) {
+                    sqlClient.nativeQuery(buildIdentification()).execute(MySQLBuilder.getDeleteSql(entity, modelInfo));
+                } else {
+                    sqlClient.nativeQuery(buildIdentification()).execute("delete from " + safeTable() + " where " +
+                            idColumn.getSafeName() + " = " + id);
+                }
+            }
         }
     }
 

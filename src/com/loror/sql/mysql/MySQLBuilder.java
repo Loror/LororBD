@@ -5,7 +5,6 @@ import com.loror.sql.ModelInfo;
 import com.loror.sql.ModelResult;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -242,7 +241,7 @@ public class MySQLBuilder {
      * 获得删除语句
      */
     public static String getDeleteSql(Object entity, ModelInfo modelInfo) {
-        HashMap<String, String> columns = new HashMap<>();
+        Map<String, Object> columns = new LinkedHashMap<>();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
             field.setAccessible(true);
@@ -260,6 +259,45 @@ public class MySQLBuilder {
         StringBuilder builder = new StringBuilder();
         builder.append("delete from ")
                 .append(modelInfo.getSafeTableName())
+                .append(" where ");
+        for (String o : columns.keySet()) {
+            if (columns.get(o) == null) {
+                builder.append(o)
+                        .append(" is null and ");
+            } else {
+                builder.append(o)
+                        .append(" = ")
+                        .append(ColumnFilter.safeValue(columns.get(o)))
+                        .append(" and ");
+            }
+        }
+        return builder.toString().substring(0, builder.toString().length() - 5);
+    }
+
+    /**
+     * 获得删除语句
+     */
+    public static String getDeleteSql(ModelResult entity) {
+        if (entity.getModel() == null) {
+            throw new IllegalArgumentException("model in ModelResult is not define");
+        }
+        Map<String, Object> columns = new LinkedHashMap<>();
+        entity.forEach((key, value) -> {
+            String safeName;
+            if (!ColumnFilter.isFullName(key)) {
+                safeName = "`" + key + "`";
+            } else {
+                safeName = key;
+            }
+            columns.put(safeName, value);
+        });
+        String model = entity.getModel();
+        if (!ColumnFilter.isFullName(model)) {
+            model = "`" + model + "`";
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("delete from ")
+                .append(model)
                 .append(" where ");
         for (String o : columns.keySet()) {
             if (columns.get(o) == null) {

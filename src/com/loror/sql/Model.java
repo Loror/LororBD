@@ -176,6 +176,11 @@ public abstract class Model extends Where {
     public abstract void delete();
 
     /**
+     * 有id按照id删，无id全匹配删除
+     */
+    public abstract void delete(Object entity);
+
+    /**
      * 清空表
      */
     public abstract void clear();
