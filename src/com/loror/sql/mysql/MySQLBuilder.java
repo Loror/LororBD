@@ -203,7 +203,8 @@ public class MySQLBuilder {
         if (entity.getModel() == null) {
             throw new IllegalArgumentException("model in ModelResult is not define");
         }
-        HashMap<String, Object> columns = new HashMap<>();
+        StringBuilder keys = new StringBuilder();
+        StringBuilder values = new StringBuilder();
         entity.forEach((key, value) -> {
             String safeName;
             if (!ColumnFilter.isFullName(key)) {
@@ -211,19 +212,17 @@ public class MySQLBuilder {
             } else {
                 safeName = key;
             }
-            columns.put(safeName, value);
-        });
-        StringBuilder keys = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-        for (String o : columns.keySet()) {
-            keys.append(o)
+            keys.append(safeName)
                     .append(",");
-            if (columns.get(o) == null) {
+            if (value == null) {
                 values.append("null,");
             } else {
-                values.append(ColumnFilter.safeValue(columns.get(o)))
+                values.append(ColumnFilter.safeValue(value))
                         .append(",");
             }
+        });
+        if (keys.length() == 0) {
+            throw new IllegalArgumentException("ModelResult does not contains any column");
         }
         keys.deleteCharAt(keys.length() - 1);
         values.deleteCharAt(values.length() - 1);
