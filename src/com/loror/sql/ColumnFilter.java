@@ -5,14 +5,14 @@ public class ColumnFilter {
     /**
      * 获取value
      */
-    public static String getValue(String name, Object var, ModelInfo.ColumnInfo column) {
+    public static String getValue(Object var, ModelInfo.ColumnInfo column) {
         if (var != null) {
             return String.valueOf(var);
         } else {
             if (column != null) {
                 String defaultValue = column.getDefaultValue();
                 if (column.isNotNull() && defaultValue == null) {
-                    throw new NullPointerException("column " + name + " can not be null");
+                    throw new NullPointerException("column " + column.getName() + " can not be null");
                 }
                 return defaultValue;
             } else {

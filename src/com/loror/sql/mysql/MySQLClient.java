@@ -226,13 +226,15 @@ public class MySQLClient implements SQLClient {
                 String newColumnName = newColumnNames.get(i);
                 ModelInfo.ColumnInfo columnInfo = columnHashMap.get(newColumnName);
                 String type = columnInfo.getType();
-                if (mySQLDataBase.execute("alter table " + modelInfo.getSafeTableName() + " add column `" + newColumnName + "` " + type)) {
-                    String defaultValue = columnInfo.getDefaultValue();
-                    if (defaultValue != null && defaultValue.length() > 0) {
-                        mySQLDataBase.execute("update " + modelInfo.getSafeTableName() + " set `" + newColumnName +
-                                "` = " + ColumnFilter.safeValue(defaultValue) + "");
-                    }
+                String sql = "alter table " + modelInfo.getSafeTableName() + " add column `" + newColumnName + "` " + type;
+                if (columnInfo.isNotNull()) {
+                    sql += " NOT NULL";
                 }
+                String defaultValue = columnInfo.getDefaultValue();
+                if (defaultValue != null && defaultValue.length() > 0) {
+                    sql += " DEFAULT " + ColumnFilter.safeValue(defaultValue);
+                }
+                mySQLDataBase.execute(sql);
             }
         });
 

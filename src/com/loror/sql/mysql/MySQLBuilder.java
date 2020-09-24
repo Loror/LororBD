@@ -28,8 +28,16 @@ public class MySQLBuilder {
             } else {
                 builder.append(columnInfo.getSafeName())
                         .append(" ")
-                        .append(columnInfo.getType())
-                        .append(",");
+                        .append(columnInfo.getType());
+                if (columnInfo.isNotNull()) {
+                    builder.append(" NOT NULL");
+                }
+                String defaultValue = columnInfo.getDefaultValue();
+                if (defaultValue != null && defaultValue.length() > 0) {
+                    builder.append(" DEFAULT ");
+                    builder.append(ColumnFilter.safeValue(defaultValue));
+                }
+                builder.append(",");
             }
         }
         if (primary != null) {
@@ -96,7 +104,7 @@ public class MySQLBuilder {
                     if (ignoreNull && object == null) {
                         continue;
                     }
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(columnInfo.getName(), object, columnInfo));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -165,7 +173,7 @@ public class MySQLBuilder {
                         }
                     }
                 } else {
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(columnInfo.getName(), object, columnInfo));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -203,7 +211,7 @@ public class MySQLBuilder {
             } else {
                 safeName = key;
             }
-            columns.put(safeName, ColumnFilter.getValue(key, value, null));
+            columns.put(safeName, ColumnFilter.getValue(value, null));
         });
         StringBuilder keys = new StringBuilder();
         StringBuilder values = new StringBuilder();
@@ -239,7 +247,7 @@ public class MySQLBuilder {
                 if (columnInfo.isPrimaryKey()) {
                     columns.put(columnInfo.getSafeName(), String.valueOf(object));
                 } else {
-                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(columnInfo.getName(), object, columnInfo));
+                    columns.put(columnInfo.getSafeName(), ColumnFilter.getValue(object, columnInfo));
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

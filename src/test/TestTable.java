@@ -13,7 +13,7 @@ public class TestTable {
     public String name;
     @Column
     public String email;
-    @Column(name = "random", defaultValue = "3")
+    @Column(name = "random", notNull = true, defaultValue = "3")
     public int count;
     @Column(length = 1, defaultValue = "0")
     public int group;

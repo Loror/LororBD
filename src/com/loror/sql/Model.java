@@ -136,6 +136,11 @@ public abstract class Model extends Where {
     public abstract Model join(String model, String on);
 
     /**
+     * 连表
+     */
+    public abstract Model innerJoin(String model, String on);
+
+    /**
      * 左连表
      */
     public abstract Model leftJoin(String model, String on);

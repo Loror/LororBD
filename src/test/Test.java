@@ -41,18 +41,18 @@ public class Test {
                 }
             });
 
-            ModelResultList modelResults = sqlClient.model("test as t")
-                    .select("sum(id)")
-                    .where("id", "<>", 0)
-                    .groupBy("`group`")
-                    .having("sum(id)", ">", 1)
-                    .page(1, 2)
+
+            sqlClient.createTableIfNotExists(TestTable.class);
+            sqlClient.changeTableIfColumnAdd(TestTable.class);
+
+            sqlClient.model("test")
+                    .save(new ModelResult()
+                            .add("name", "test")
+                            .add("email", "test@qq.com")
+                            .add("random", (int) (Math.random() * 100)));
+
+            ModelResultList modelResults = sqlClient.model("test left join demo on test.id = demo.tid")
                     .get();
-
-
-            modelResults = sqlClient.model("test left join demo on test.id = demo.tid")
-                    .get();
-
 
             System.out.println("=============================");
             for (ModelResult modelResult : modelResults) {

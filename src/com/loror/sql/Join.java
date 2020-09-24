@@ -2,7 +2,7 @@ package com.loror.sql;
 
 public class Join {
 
-    private int type;//0,join,1,left join,2,right join
+    private int type;//0,join,1,left join,2,right join,3,inner join
     private String model;
     private String on;
 
@@ -26,7 +26,7 @@ public class Join {
 
     @Override
     public String toString() {
-        return (type == 1 ? "left " : type == 2 ? "right " : "") + "join " +
+        return (type == 1 ? "left " : type == 2 ? "right " : type == 3 ? "inner " : "") + "join " +
                 (ColumnFilter.isFullName(model) ? model : ("`" + model + "`")) +
                 " on " + on;
     }

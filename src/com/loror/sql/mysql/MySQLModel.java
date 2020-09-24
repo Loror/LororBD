@@ -44,6 +44,15 @@ public class MySQLModel extends Model {
     }
 
     @Override
+    public Model innerJoin(String model, String on) {
+        if (joins == null) {
+            joins = new ArrayList<>();
+        }
+        joins.add(new Join(3, model, on));
+        return this;
+    }
+
+    @Override
     public Model leftJoin(String model, String on) {
         if (joins == null) {
             joins = new ArrayList<>();
