@@ -24,15 +24,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="优化条件">
+    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Join.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Join.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/Model.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/TestTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/TestTable.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -317,7 +311,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600748585690</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="添加inner join">
+      <created>1600910405305</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1600910405305</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -347,7 +348,8 @@
     <MESSAGE value="缓存key优化" />
     <MESSAGE value="保存支持ModelResult" />
     <MESSAGE value="优化条件" />
-    <option name="LAST_COMMIT_MESSAGE" value="优化条件" />
+    <MESSAGE value="添加inner join" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加inner join" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599804106526">
@@ -366,10 +368,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="560" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600392116429" />
-    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1600650947030">
+    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1600910402214">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600650947030" />
+    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600910402214" />
     <state x="128" y="85" key="DiffContextDialog" timestamp="1600250133990">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -378,22 +380,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="228" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599802253661" />
-    <state width="1876" height="65" key="GridCell.Tab.0.bottom" timestamp="1600910371447">
+    <state width="1876" height="267" key="GridCell.Tab.0.bottom" timestamp="1600910816374">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="65" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600910371447" />
-    <state width="1876" height="65" key="GridCell.Tab.0.center" timestamp="1600910371447">
+    <state width="1876" height="267" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600910816374" />
+    <state width="1876" height="267" key="GridCell.Tab.0.center" timestamp="1600910816374">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="65" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600910371447" />
-    <state width="1876" height="65" key="GridCell.Tab.0.left" timestamp="1600910371447">
+    <state width="1876" height="267" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600910816374" />
+    <state width="1876" height="267" key="GridCell.Tab.0.left" timestamp="1600910816374">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="65" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600910371447" />
-    <state width="1876" height="65" key="GridCell.Tab.0.right" timestamp="1600910371447">
+    <state width="1876" height="267" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600910816374" />
+    <state width="1876" height="267" key="GridCell.Tab.0.right" timestamp="1600910816374">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="65" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600910371447" />
+    <state width="1876" height="267" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600910816374" />
     <state width="1876" height="342" key="GridCell.Tab.1.bottom" timestamp="1600235618484">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

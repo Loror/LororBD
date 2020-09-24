@@ -14,13 +14,15 @@ public class Test {
     public static void main(String[] args) {
 
         try (SQLClient sqlClient = new MySQLClient("jdbc:mysql://localhost:3306/test?useOldAliasMetadataBehavior=true", "root", "11231123")) {
+
+            //日志
             sqlClient.setLogListener((connect, sql) -> {
                 System.out.println(sql + (connect ? "(查询)" : "(缓存)"));
                 singleTable(sql);
             });
 
+            //设置缓存
             HashMap<String, ModelResultList> cache = new HashMap<>();
-
             sqlClient.setSQLCache(new SQLClient.SQLCache() {
 
                 @Override
@@ -41,18 +43,20 @@ public class Test {
                 }
             });
 
-
+            //同步表信息
             sqlClient.createTableIfNotExists(TestTable.class);
             sqlClient.changeTableIfColumnAdd(TestTable.class);
 
+            //保存
             sqlClient.model("test")
                     .save(new ModelResult()
                             .add("name", "test")
                             .add("email", "test@qq.com")
                             .add("random", (int) (Math.random() * 100)));
 
-            ModelResultList modelResults = sqlClient.model("test left join demo on test.id = demo.tid")
-                    .get();
+            //native查询
+            ModelResultList modelResults = sqlClient.nativeQuery()
+                    .executeQuery("select * from test left join demo on test.id = demo.tid");
 
             System.out.println("=============================");
             for (ModelResult modelResult : modelResults) {
@@ -60,6 +64,7 @@ public class Test {
             }
             System.out.println("=============================");
 
+            //连表查询
             List<Integer> ids = sqlClient.model("test")
                     .join("demo", "test.id = demo.tid")
                     .select("test.id")
