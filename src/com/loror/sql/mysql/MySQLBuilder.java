@@ -69,31 +69,6 @@ public class MySQLBuilder {
     /**
      * 获得更新语句
      */
-    public static String getUpdateSql(Object entity, ModelInfo modelInfo) {
-        String idName = "id";
-        String idVolume = "0";
-        ModelInfo.ColumnInfo columnInfo = modelInfo.getId();
-        if (columnInfo != null) {
-            idName = columnInfo.getSafeName();
-            Field field = columnInfo.getField();
-            field.setAccessible(true);
-            try {
-                Object object = field.get(entity);
-                if (object != null) {
-                    idVolume = object.toString();
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return getUpdateSqlNoWhere(entity, modelInfo, false) +
-                " where `" + idName + "` = " + idVolume;
-    }
-
-    /**
-     * 获得更新语句
-     */
     public static String getUpdateSqlNoWhere(Object entity, ModelInfo modelInfo, boolean ignoreNull) {
         Map<String, Object> columns = new LinkedHashMap<>();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {

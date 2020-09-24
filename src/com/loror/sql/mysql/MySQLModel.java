@@ -147,17 +147,6 @@ public class MySQLModel extends Model {
         }
     }
 
-    /**
-     * 根据id更新数据
-     */
-    protected void updateById(Object entity) {
-        if (entity == null) {
-            return;
-        }
-        String sql = MySQLBuilder.getUpdateSql(entity, ModelInfo.of(entity.getClass()));
-        sqlClient.nativeQuery(buildIdentification()).executeUpdate(sql);
-    }
-
     @Override
     public void save(Object entity) {
         if (entity != null) {
@@ -183,7 +172,9 @@ public class MySQLModel extends Model {
                 if (id == 0) {
                     insert(entity);
                 } else {
-                    updateById(entity);
+                    String sql = MySQLBuilder.getUpdateSqlNoWhere(entity, ModelInfo.of(entity.getClass()), false) +
+                            " where " + idColumn.getSafeName() + " = " + id;
+                    sqlClient.nativeQuery(buildIdentification()).executeUpdate(sql);
                 }
             }
         }
