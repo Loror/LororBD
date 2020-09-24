@@ -203,7 +203,7 @@ public class MySQLBuilder {
         if (entity.getModel() == null) {
             throw new IllegalArgumentException("model in ModelResult is not define");
         }
-        HashMap<String, String> columns = new HashMap<>();
+        HashMap<String, Object> columns = new HashMap<>();
         entity.forEach((key, value) -> {
             String safeName;
             if (!ColumnFilter.isFullName(key)) {
@@ -211,7 +211,7 @@ public class MySQLBuilder {
             } else {
                 safeName = key;
             }
-            columns.put(safeName, ColumnFilter.getValue(value, null));
+            columns.put(safeName, value);
         });
         StringBuilder keys = new StringBuilder();
         StringBuilder values = new StringBuilder();
