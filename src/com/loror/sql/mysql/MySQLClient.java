@@ -225,8 +225,7 @@ public class MySQLClient implements SQLClient {
             for (int i = 0; i < newColumnNames.size(); i++) {
                 String newColumnName = newColumnNames.get(i);
                 ModelInfo.ColumnInfo columnInfo = columnHashMap.get(newColumnName);
-                String type = columnInfo.getType();
-                String sql = "alter table " + modelInfo.getSafeTableName() + " add column `" + newColumnName + "` " + type;
+                String sql = "alter table " + modelInfo.getSafeTableName() + " add column " + columnInfo.getSafeName() + " " + columnInfo.getType();
                 if (columnInfo.isNotNull()) {
                     sql += " NOT NULL";
                 }
