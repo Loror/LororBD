@@ -16,8 +16,8 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     private Connection conn;
 
-    public MySQLDataBase(String driver, String url, String name, String password) throws SQLException, ClassNotFoundException {
-        Class.forName(driver);// 指定连接类型
+    public MySQLDataBase(String url, String name, String password) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.jdbc.Driver");// 指定连接类型
         conn = DriverManager.getConnection(url, name, password);// 获取连接
     }
 
@@ -37,8 +37,13 @@ abstract class MySQLDataBase implements SQLDataBase {
         }
     }
 
-    public void getPst(String sql, boolean returnKey, OnGetPst onGetPst) throws SQLException {
-        PreparedStatement preparedStatement = getPst(sql, returnKey);
+    public void getPst(String sql, boolean returnKey, OnGetPst onGetPst) {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = getPst(sql, returnKey);
+        } catch (SQLException e) {
+            onException(new com.loror.sql.SQLException(e));
+        }
         if (preparedStatement == null) {
             return;
         }
@@ -49,14 +54,17 @@ abstract class MySQLDataBase implements SQLDataBase {
                 preparedStatement.execute();
             }
         } catch (Exception e) {
-            if (e instanceof SQLException) {
-                throw e;
-            }
-            e.printStackTrace();
+            onException(new com.loror.sql.SQLException(e));
         } finally {
-            preparedStatement.close();
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    public abstract void onException(com.loror.sql.SQLException e);
 
     public abstract void onSql(boolean connect, String sql);
 
@@ -70,63 +78,47 @@ abstract class MySQLDataBase implements SQLDataBase {
             return cache;
         }
         ModelResultList entitys = new ModelResultList();
-        try {
-            getPst(sql, false, pst -> {
-                ResultSet cursor = pst.executeQuery();
-                List<ModelResult> modelResults = MySQLResult.find(cursor);
-                cursor.close();
-                entitys.addAll(modelResults);
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        getPst(sql, false, pst -> {
+            ResultSet cursor = pst.executeQuery();
+            List<ModelResult> modelResults = MySQLResult.find(cursor);
+            cursor.close();
+            entitys.addAll(modelResults);
+        });
         return entitys;
     }
 
     @Override
     public boolean execute(String sql) {
         boolean[] execute = new boolean[1];
-        try {
-            getPst(sql, false, pst -> {
-                execute[0] = pst.execute();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        getPst(sql, false, pst -> {
+            execute[0] = pst.execute();
+        });
         return execute[0];
     }
 
     @Override
     public ModelResult executeByReturnKeys(String sql) {
         ModelResult result = new ModelResult();
-        try {
-            getPst(sql, true, pst -> {
-                pst.execute();
-                // 在执行更新后获取自增长列
-                ResultSet cursor = pst.getGeneratedKeys();
-                List<ModelResult> modelResults = MySQLResult.find(cursor);
-                cursor.close();
-                if (modelResults.size() > 0) {
-                    ModelResult query = modelResults.get(0);
-                    result.addAll(query);
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        getPst(sql, true, pst -> {
+            pst.execute();
+            // 在执行更新后获取自增长列
+            ResultSet cursor = pst.getGeneratedKeys();
+            List<ModelResult> modelResults = MySQLResult.find(cursor);
+            cursor.close();
+            if (modelResults.size() > 0) {
+                ModelResult query = modelResults.get(0);
+                result.addAll(query);
+            }
+        });
         return result;
     }
 
     @Override
     public int executeUpdate(String sql) {
         int[] updates = new int[1];
-        try {
-            getPst(sql, false, pst -> {
-                updates[0] = pst.executeUpdate();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        getPst(sql, false, pst -> {
+            updates[0] = pst.executeUpdate();
+        });
         return updates[0];
     }
 

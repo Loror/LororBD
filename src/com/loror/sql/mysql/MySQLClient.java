@@ -3,6 +3,7 @@ package com.loror.sql.mysql;
 import com.loror.sql.*;
 
 import java.sql.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ public class MySQLClient implements SQLClient {
     private List<Class<?>> execTableUpdated = new LinkedList<>();//已执行过更新表
     private OnClose onClose;//执行close方法时候调用，如果为空则执行关闭连接
     private LogListener logListener;
+    private ExceptionHandler exceptionHandler;
     private SQLCache sqlCache;
     private QueryIdentification cacheIdentification;
 
@@ -40,7 +42,13 @@ public class MySQLClient implements SQLClient {
                 identification = cacheIdentification;
                 cacheIdentification = null;
             }
-            mySQLDataBase = new MySQLDataBase("com.mysql.jdbc.Driver", url, name, password) {
+            mySQLDataBase = new MySQLDataBase(url, name, password) {
+
+                @Override
+                public void onException(com.loror.sql.SQLException e) {
+                    MySQLClient.this.onException(e);
+                }
+
                 @Override
                 public void onSql(boolean connect, String sql) {
                     if (logListener != null) {
@@ -98,8 +106,8 @@ public class MySQLClient implements SQLClient {
                     return results;
                 }
             };
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            onException(new com.loror.sql.SQLException(e));
         }
     }
 
@@ -111,6 +119,11 @@ public class MySQLClient implements SQLClient {
     @Override
     public void setLogListener(LogListener logListener) {
         this.logListener = logListener;
+    }
+
+    @Override
+    public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
@@ -173,18 +186,14 @@ public class MySQLClient implements SQLClient {
         execTableUpdated.add(table);
         ModelInfo modelInfo = getModel(table);
         List<String> columnNames = new ArrayList<>();
-        try {
-            mySQLDataBase.getPst("select * from " + modelInfo.getSafeTableName() + " limit 1", false, preparedStatement -> {
-                ResultSet cursor = preparedStatement.executeQuery();
-                ResultSetMetaData data = cursor.getMetaData();
-                for (int i = 0; i < data.getColumnCount(); i++) {
-                    columnNames.add(data.getColumnName(i + 1));
-                }
-                cursor.close();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        mySQLDataBase.getPst("select * from " + modelInfo.getSafeTableName() + " limit 1", false, preparedStatement -> {
+            ResultSet cursor = preparedStatement.executeQuery();
+            ResultSetMetaData data = cursor.getMetaData();
+            for (int i = 0; i < data.getColumnCount(); i++) {
+                columnNames.add(data.getColumnName(i + 1));
+            }
+            cursor.close();
+        });
         if (columnNames.size() == 0) {
             return;
         }
@@ -258,25 +267,41 @@ public class MySQLClient implements SQLClient {
         synchronized (this) {
             try {
                 connection.setAutoCommit(false);
-                try {
-                    runnable.run();
-                    connection.commit();
-                    return true;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    try {
-                        connection.rollback();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                } finally {
-                    connection.setAutoCommit(true);
-                }
             } catch (SQLException e) {
+                onException(new com.loror.sql.SQLException(e));
+            }
+            try {
+                runnable.run();
+                try {
+                    connection.commit();
+                } catch (SQLException e) {
+                    onException(new com.loror.sql.SQLException(e));
+                }
+                return true;
+            } catch (Exception e) {
                 e.printStackTrace();
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } finally {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException e) {
+                    onException(new com.loror.sql.SQLException(e));
+                }
             }
         }
         return false;
+    }
+
+    protected void onException(com.loror.sql.SQLException e) {
+        if (exceptionHandler != null) {
+            exceptionHandler.handle(e);
+        } else {
+            throw e;
+        }
     }
 
     @Override
