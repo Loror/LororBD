@@ -25,9 +25,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/loror/sql/SQLException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/SQLClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/SQLClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLDataBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLDataBase.java" afterDir="false" />
     </list>
@@ -391,7 +389,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600929336575</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="添加异常捕获机制">
+      <created>1601169942039</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1601169942039</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -426,7 +431,8 @@
     <MESSAGE value="save保留类型信息" />
     <MESSAGE value="添加entity删除" />
     <MESSAGE value="优化ModelResult" />
-    <option name="LAST_COMMIT_MESSAGE" value="优化ModelResult" />
+    <MESSAGE value="添加异常捕获机制" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加异常捕获机制" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599804106526">
@@ -445,10 +451,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="560" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600392116429" />
-    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1600929335984">
+    <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1601169940741">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1600929335984" />
+    <state x="555" y="115" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1601169940741" />
     <state x="128" y="85" key="DiffContextDialog" timestamp="1600250133990">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

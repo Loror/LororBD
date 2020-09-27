@@ -16,9 +16,13 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     private Connection conn;
 
-    public MySQLDataBase(String url, String name, String password) throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");// 指定连接类型
-        conn = DriverManager.getConnection(url, name, password);// 获取连接
+    public MySQLDataBase(String url, String name, String password) {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");// 指定连接类型
+            conn = DriverManager.getConnection(url, name, password);// 获取连接
+        } catch (SQLException | ClassNotFoundException e) {
+            onException(new com.loror.sql.SQLException(e));
+        }
     }
 
     public Connection getConn() {
@@ -53,7 +57,7 @@ abstract class MySQLDataBase implements SQLDataBase {
             } else {
                 preparedStatement.execute();
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             onException(new com.loror.sql.SQLException(e));
         } finally {
             try {

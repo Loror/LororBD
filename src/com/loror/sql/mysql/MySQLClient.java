@@ -33,82 +33,78 @@ public class MySQLClient implements SQLClient {
      */
     private void init(String url, String name, String password) {
         close();
-        try {
-            QueryIdentification identification;
-            if (cacheIdentification == null) {
-                identification = new QueryIdentification();
-                identification.setNative(true);
-            } else {
-                identification = cacheIdentification;
-                cacheIdentification = null;
-            }
-            mySQLDataBase = new MySQLDataBase(url, name, password) {
-
-                @Override
-                public void onException(com.loror.sql.SQLException e) {
-                    MySQLClient.this.onException(e);
-                }
-
-                @Override
-                public void onSql(boolean connect, String sql) {
-                    if (logListener != null) {
-                        logListener.log(connect, sql);
-                    }
-                }
-
-                @Override
-                public ModelResultList beforeQuery(String sql) {
-                    identification.setSql(sql);
-                    return sqlCache == null ? null : sqlCache.beforeQuery(identification);
-                }
-
-                @Override
-                public boolean execute(String sql) {
-                    boolean result = super.execute(sql);
-                    if (sqlCache != null) {
-                        identification.setSql(sql);
-                        sqlCache.onExecute(identification);
-                    }
-                    return result;
-                }
-
-                @Override
-                public int executeUpdate(String sql) {
-                    int result = super.executeUpdate(sql);
-                    if (sqlCache != null) {
-                        identification.setSql(sql);
-                        sqlCache.onExecute(identification);
-                    }
-                    return result;
-                }
-
-                @Override
-                public ModelResult executeByReturnKeys(String sql) {
-                    ModelResult result = super.executeByReturnKeys(sql);
-                    result.setModel(identification.getModel());
-                    if (sqlCache != null) {
-                        identification.setSql(sql);
-                        sqlCache.onExecute(identification);
-                    }
-                    return result;
-                }
-
-                @Override
-                public ModelResultList executeQuery(String sql) {
-                    ModelResultList results = super.executeQuery(sql);
-                    for (ModelResult result : results) {
-                        result.setModel(identification.getModel());
-                    }
-                    if (sqlCache != null) {
-                        identification.setSql(sql);
-                        sqlCache.onExecuteQuery(identification, results);
-                    }
-                    return results;
-                }
-            };
-        } catch (Exception e) {
-            onException(new com.loror.sql.SQLException(e));
+        QueryIdentification identification;
+        if (cacheIdentification == null) {
+            identification = new QueryIdentification();
+            identification.setNative(true);
+        } else {
+            identification = cacheIdentification;
+            cacheIdentification = null;
         }
+        mySQLDataBase = new MySQLDataBase(url, name, password) {
+
+            @Override
+            public void onException(com.loror.sql.SQLException e) {
+                MySQLClient.this.onException(e);
+            }
+
+            @Override
+            public void onSql(boolean connect, String sql) {
+                if (logListener != null) {
+                    logListener.log(connect, sql);
+                }
+            }
+
+            @Override
+            public ModelResultList beforeQuery(String sql) {
+                identification.setSql(sql);
+                return sqlCache == null ? null : sqlCache.beforeQuery(identification);
+            }
+
+            @Override
+            public boolean execute(String sql) {
+                boolean result = super.execute(sql);
+                if (sqlCache != null) {
+                    identification.setSql(sql);
+                    sqlCache.onExecute(identification);
+                }
+                return result;
+            }
+
+            @Override
+            public int executeUpdate(String sql) {
+                int result = super.executeUpdate(sql);
+                if (sqlCache != null) {
+                    identification.setSql(sql);
+                    sqlCache.onExecute(identification);
+                }
+                return result;
+            }
+
+            @Override
+            public ModelResult executeByReturnKeys(String sql) {
+                ModelResult result = super.executeByReturnKeys(sql);
+                result.setModel(identification.getModel());
+                if (sqlCache != null) {
+                    identification.setSql(sql);
+                    sqlCache.onExecute(identification);
+                }
+                return result;
+            }
+
+            @Override
+            public ModelResultList executeQuery(String sql) {
+                ModelResultList results = super.executeQuery(sql);
+                for (ModelResult result : results) {
+                    result.setModel(identification.getModel());
+                }
+                if (sqlCache != null) {
+                    identification.setSql(sql);
+                    sqlCache.onExecuteQuery(identification, results);
+                }
+                return results;
+            }
+        };
     }
 
     @Override
