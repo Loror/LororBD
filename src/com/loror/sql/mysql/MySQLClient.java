@@ -33,15 +33,8 @@ public class MySQLClient implements SQLClient {
      */
     private void init(String url, String name, String password) {
         close();
-        QueryIdentification identification;
-        if (cacheIdentification == null) {
-            identification = new QueryIdentification();
-            identification.setNative(true);
-        } else {
-            identification = cacheIdentification;
-            cacheIdentification = null;
-        }
         mySQLDataBase = new MySQLDataBase(url, name, password) {
+            private QueryIdentification identification;
 
             @Override
             public void onException(com.loror.sql.SQLException e) {
@@ -57,15 +50,19 @@ public class MySQLClient implements SQLClient {
 
             @Override
             public ModelResultList beforeQuery(String sql) {
-                identification.setSql(sql);
+                identification = buildQueryIdentification(sql);
                 return sqlCache == null ? null : sqlCache.beforeQuery(identification);
+            }
+
+            @Override
+            public void beforeExecute(String sql) {
+                identification = buildQueryIdentification(sql);
             }
 
             @Override
             public boolean execute(String sql) {
                 boolean result = super.execute(sql);
                 if (sqlCache != null) {
-                    identification.setSql(sql);
                     sqlCache.onExecute(identification);
                 }
                 return result;
@@ -75,7 +72,6 @@ public class MySQLClient implements SQLClient {
             public int executeUpdate(String sql) {
                 int result = super.executeUpdate(sql);
                 if (sqlCache != null) {
-                    identification.setSql(sql);
                     sqlCache.onExecute(identification);
                 }
                 return result;
@@ -86,7 +82,6 @@ public class MySQLClient implements SQLClient {
                 ModelResult result = super.executeByReturnKeys(sql);
                 result.setModel(identification.getModel());
                 if (sqlCache != null) {
-                    identification.setSql(sql);
                     sqlCache.onExecute(identification);
                 }
                 return result;
@@ -99,12 +94,27 @@ public class MySQLClient implements SQLClient {
                     result.setModel(identification.getModel());
                 }
                 if (sqlCache != null) {
-                    identification.setSql(sql);
                     sqlCache.onExecuteQuery(identification, results);
                 }
                 return results;
             }
         };
+    }
+
+    /**
+     * 构建QueryIdentification
+     */
+    private QueryIdentification buildQueryIdentification(String sql) {
+        QueryIdentification identification;
+        if (cacheIdentification == null) {
+            identification = new QueryIdentification();
+            identification.setNative(true);
+        } else {
+            identification = cacheIdentification;
+            cacheIdentification = null;
+        }
+        identification.setSql(sql);
+        return identification;
     }
 
     @Override

@@ -74,6 +74,8 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     public abstract ModelResultList beforeQuery(String sql);
 
+    public abstract void beforeExecute(String sql);
+
     @Override
     public ModelResultList executeQuery(String sql) {
         ModelResultList cache = beforeQuery(sql);
@@ -93,6 +95,7 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     @Override
     public boolean execute(String sql) {
+        beforeExecute(sql);
         boolean[] execute = new boolean[1];
         getPst(sql, false, pst -> {
             execute[0] = pst.execute();
@@ -102,6 +105,7 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     @Override
     public ModelResult executeByReturnKeys(String sql) {
+        beforeExecute(sql);
         ModelResult result = new ModelResult();
         getPst(sql, true, pst -> {
             pst.execute();
@@ -119,6 +123,7 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     @Override
     public int executeUpdate(String sql) {
+        beforeExecute(sql);
         int[] updates = new int[1];
         getPst(sql, false, pst -> {
             updates[0] = pst.executeUpdate();
