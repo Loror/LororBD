@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ModelResult {
+public class ModelData {
 
     /**
      * 保证data有序且可重复
@@ -27,12 +27,12 @@ public class ModelResult {
     /**
      * model对象获得ModelResult
      */
-    public static ModelResult fromModel(Object model) {
+    public static ModelData fromModel(Object model) {
         if (model == null) {
             return null;
         }
         ModelInfo modelInfo = ModelInfo.of(model.getClass());
-        ModelResult modelResult = new ModelResult();
+        ModelData modelResult = new ModelData();
         for (ModelInfo.ColumnInfo columnInfo : modelInfo.getColumnInfos()) {
             Field field = columnInfo.getField();
             field.setAccessible(true);
@@ -50,11 +50,11 @@ public class ModelResult {
     private String model;
     private final List<IdentityNode> data = new LinkedList<>();
 
-    public ModelResult() {
+    public ModelData() {
         this(false);
     }
 
-    public ModelResult(boolean isNull) {
+    public ModelData(boolean isNull) {
         this.isNull = isNull;
     }
 
@@ -62,7 +62,7 @@ public class ModelResult {
         return isNull;
     }
 
-    public ModelResult setModel(String model) {
+    public ModelData setModel(String model) {
         this.model = model;
         return this;
     }
@@ -98,7 +98,7 @@ public class ModelResult {
         return keys;
     }
 
-    public ModelResult addAll(ModelResult modelResult) {
+    public ModelData addAll(ModelData modelResult) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
@@ -111,7 +111,7 @@ public class ModelResult {
     /**
      * 添加元素
      */
-    public ModelResult add(String name, Object value) {
+    public ModelData add(String name, Object value) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
@@ -124,7 +124,7 @@ public class ModelResult {
     /**
      * 设置元素，移除同名键
      */
-    public ModelResult set(String name, Object value) {
+    public ModelData set(String name, Object value) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }
@@ -138,7 +138,7 @@ public class ModelResult {
     /**
      * 移除
      */
-    public ModelResult remove(String name) {
+    public ModelData remove(String name) {
         if (isNull) {
             throw new NullPointerException("this result is null");
         }

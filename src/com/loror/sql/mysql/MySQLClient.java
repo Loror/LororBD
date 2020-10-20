@@ -49,7 +49,7 @@ public class MySQLClient implements SQLClient {
             }
 
             @Override
-            public ModelResultList beforeQuery(String sql) {
+            public ModelDataList beforeQuery(String sql) {
                 identification = buildQueryIdentification(sql);
                 return sqlCache == null ? null : sqlCache.beforeQuery(identification);
             }
@@ -78,8 +78,8 @@ public class MySQLClient implements SQLClient {
             }
 
             @Override
-            public ModelResult executeByReturnKeys(String sql) {
-                ModelResult result = super.executeByReturnKeys(sql);
+            public ModelData executeByReturnKeys(String sql) {
+                ModelData result = super.executeByReturnKeys(sql);
                 result.setModel(identification.getModel());
                 if (sqlCache != null) {
                     sqlCache.onExecute(identification);
@@ -88,9 +88,9 @@ public class MySQLClient implements SQLClient {
             }
 
             @Override
-            public ModelResultList executeQuery(String sql) {
-                ModelResultList results = super.executeQuery(sql);
-                for (ModelResult result : results) {
+            public ModelDataList executeQuery(String sql) {
+                ModelDataList results = super.executeQuery(sql);
+                for (ModelData result : results) {
                     result.setModel(identification.getModel());
                 }
                 if (sqlCache != null) {

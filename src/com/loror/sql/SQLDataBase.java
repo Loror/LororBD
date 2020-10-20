@@ -2,11 +2,11 @@ package com.loror.sql;
 
 public interface SQLDataBase {
 
-    ModelResultList executeQuery(String sql);
+    ModelDataList executeQuery(String sql);
 
     boolean execute(String sql);
 
-    ModelResult executeByReturnKeys(String sql);
+    ModelData executeByReturnKeys(String sql);
 
     int executeUpdate(String sql);
 

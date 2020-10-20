@@ -85,9 +85,9 @@ public interface SQLClient extends Closeable {
     }
 
     interface SQLCache {
-        ModelResultList beforeQuery(QueryIdentification identification);
+        ModelDataList beforeQuery(QueryIdentification identification);
 
-        void onExecuteQuery(QueryIdentification identification, ModelResultList modelResults);
+        void onExecuteQuery(QueryIdentification identification, ModelDataList modelResults);
 
         void onExecute(QueryIdentification identification);
     }

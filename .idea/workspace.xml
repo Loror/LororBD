@@ -24,10 +24,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="">
+    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="identification修复">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLDataBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLDataBase.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -403,7 +401,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601170213835</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="identification修复">
+      <created>1601462181352</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1601462181352</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -438,7 +443,8 @@
     <MESSAGE value="添加entity删除" />
     <MESSAGE value="优化ModelResult" />
     <MESSAGE value="添加异常捕获机制" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加异常捕获机制" />
+    <MESSAGE value="identification修复" />
+    <option name="LAST_COMMIT_MESSAGE" value="identification修复" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599804106526">

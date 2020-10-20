@@ -1,7 +1,7 @@
 package test;
 
-import com.loror.sql.ModelResult;
-import com.loror.sql.ModelResultList;
+import com.loror.sql.ModelData;
+import com.loror.sql.ModelDataList;
 import com.loror.sql.SQLClient;
 import com.loror.sql.mysql.MySQLClient;
 
@@ -20,16 +20,16 @@ public class Test {
             });
 
             //设置缓存
-            HashMap<String, ModelResultList> cache = new HashMap<>();
+            HashMap<String, ModelDataList> cache = new HashMap<>();
             sqlClient.setSQLCache(new SQLClient.SQLCache() {
 
                 @Override
-                public ModelResultList beforeQuery(SQLClient.QueryIdentification identification) {
+                public ModelDataList beforeQuery(SQLClient.QueryIdentification identification) {
                     return cache.get(identification.getSql());
                 }
 
                 @Override
-                public void onExecuteQuery(SQLClient.QueryIdentification identification, ModelResultList modelResults) {
+                public void onExecuteQuery(SQLClient.QueryIdentification identification, ModelDataList modelResults) {
                     if (modelResults != null) {
                         cache.put(identification.getSql(), modelResults);
                     }
@@ -47,17 +47,17 @@ public class Test {
 
             //保存
             sqlClient.model("test")
-                    .save(new ModelResult()
+                    .save(new ModelData()
                             .add("name", "test")
                             .add("email", "test@qq.com")
                             .add("random", (int) (Math.random() * 100)));
 
             //native查询
-            ModelResultList modelResults = sqlClient.nativeQuery()
+            ModelDataList modelResults = sqlClient.nativeQuery()
                     .executeQuery("select * from test left join demo on test.id = demo.tid");
 
             System.out.println("=============================");
-            for (ModelResult modelResult : modelResults) {
+            for (ModelData modelResult : modelResults) {
                 System.out.println(modelResult);
             }
             System.out.println("=============================");

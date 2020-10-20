@@ -1,7 +1,7 @@
 package com.loror.sql.mysql;
 
-import com.loror.sql.ModelResult;
-import com.loror.sql.ModelResultList;
+import com.loror.sql.ModelData;
+import com.loror.sql.ModelDataList;
 import com.loror.sql.SQLDataBase;
 import com.mysql.jdbc.Statement;
 
@@ -72,21 +72,21 @@ abstract class MySQLDataBase implements SQLDataBase {
 
     public abstract void onSql(boolean connect, String sql);
 
-    public abstract ModelResultList beforeQuery(String sql);
+    public abstract ModelDataList beforeQuery(String sql);
 
     public abstract void beforeExecute(String sql);
 
     @Override
-    public ModelResultList executeQuery(String sql) {
-        ModelResultList cache = beforeQuery(sql);
+    public ModelDataList executeQuery(String sql) {
+        ModelDataList cache = beforeQuery(sql);
         if (cache != null) {
             onSql(false, sql);
             return cache;
         }
-        ModelResultList entitys = new ModelResultList();
+        ModelDataList entitys = new ModelDataList();
         getPst(sql, false, pst -> {
             ResultSet cursor = pst.executeQuery();
-            List<ModelResult> modelResults = MySQLResult.find(cursor);
+            List<ModelData> modelResults = MySQLResult.find(cursor);
             cursor.close();
             entitys.addAll(modelResults);
         });
@@ -104,17 +104,17 @@ abstract class MySQLDataBase implements SQLDataBase {
     }
 
     @Override
-    public ModelResult executeByReturnKeys(String sql) {
+    public ModelData executeByReturnKeys(String sql) {
         beforeExecute(sql);
-        ModelResult result = new ModelResult();
+        ModelData result = new ModelData();
         getPst(sql, true, pst -> {
             pst.execute();
             // 在执行更新后获取自增长列
             ResultSet cursor = pst.getGeneratedKeys();
-            List<ModelResult> modelResults = MySQLResult.find(cursor);
+            List<ModelData> modelResults = MySQLResult.find(cursor);
             cursor.close();
             if (modelResults.size() > 0) {
-                ModelResult query = modelResults.get(0);
+                ModelData query = modelResults.get(0);
                 result.addAll(query);
             }
         });

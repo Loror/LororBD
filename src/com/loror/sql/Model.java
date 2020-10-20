@@ -198,7 +198,7 @@ public abstract class Model extends Where {
     /**
      * 修改
      */
-    public abstract int update(ModelResult values);
+    public abstract int update(ModelData values);
 
     /**
      * 条件计数
@@ -208,11 +208,11 @@ public abstract class Model extends Where {
     /**
      * 条件查询
      */
-    public abstract ModelResultList get();
+    public abstract ModelDataList get();
 
     /**
      * 条件查询首条
      */
-    public abstract ModelResult first();
+    public abstract ModelData first();
 
 }

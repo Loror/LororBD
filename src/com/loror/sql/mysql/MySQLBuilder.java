@@ -2,7 +2,7 @@ package com.loror.sql.mysql;
 
 import com.loror.sql.ColumnFilter;
 import com.loror.sql.ModelInfo;
-import com.loror.sql.ModelResult;
+import com.loror.sql.ModelData;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -108,7 +108,7 @@ public class MySQLBuilder {
     /**
      * 获得更新语句
      */
-    public static String getUpdateSqlNoWhere(ModelResult values, String table) {
+    public static String getUpdateSqlNoWhere(ModelData values, String table) {
         StringBuilder builder = new StringBuilder();
         builder.append("update ")
                 .append(table)
@@ -178,7 +178,7 @@ public class MySQLBuilder {
     /**
      * 获得插入语句
      */
-    public static String getInsertSql(ModelResult entity) {
+    public static String getInsertSql(ModelData entity) {
         if (entity.getModel() == null) {
             throw new IllegalArgumentException("model in ModelResult is not define");
         }
@@ -252,7 +252,7 @@ public class MySQLBuilder {
     /**
      * 获得删除语句
      */
-    public static String getDeleteSql(ModelResult entity) {
+    public static String getDeleteSql(ModelData entity) {
         if (entity.getModel() == null) {
             throw new IllegalArgumentException("model in ModelResult is not define");
         }

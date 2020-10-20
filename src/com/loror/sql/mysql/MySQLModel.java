@@ -118,7 +118,7 @@ public class MySQLModel extends Model {
         boolean returnId = id != null && id.isReturnKey();
         String sql = MySQLBuilder.getInsertSql(entity, modelInfo);
         if (returnId) {
-            ModelResult modelResult = sqlClient.nativeQuery(buildIdentification()).executeByReturnKeys(sql);
+            ModelData modelResult = sqlClient.nativeQuery(buildIdentification()).executeByReturnKeys(sql);
             List<String> keys = modelResult.keys();
             if (keys.size() > 0) {
                 long num = modelResult.getLong(keys.get(0), 0);
@@ -150,8 +150,8 @@ public class MySQLModel extends Model {
     @Override
     public void save(Object entity) {
         if (entity != null) {
-            if (entity instanceof ModelResult) {
-                ModelResult modelResult = (ModelResult) entity;
+            if (entity instanceof ModelData) {
+                ModelData modelResult = (ModelData) entity;
                 if (modelResult.getModel() == null) {
                     modelResult.setModel(model);
                 }
@@ -200,8 +200,8 @@ public class MySQLModel extends Model {
     @Override
     public void delete(Object entity) {
         if (entity != null) {
-            if (entity instanceof ModelResult) {
-                ModelResult modelResult = (ModelResult) entity;
+            if (entity instanceof ModelData) {
+                ModelData modelResult = (ModelData) entity;
                 if (modelResult.getModel() == null) {
                     modelResult.setModel(model);
                 }
@@ -253,7 +253,7 @@ public class MySQLModel extends Model {
     }
 
     @Override
-    public int update(ModelResult values) {
+    public int update(ModelData values) {
         if (values == null) {
             return 0;
         }
@@ -270,22 +270,22 @@ public class MySQLModel extends Model {
         } else {
             sql = "select count(1) from " + safeTable() + conditionRequest.getConditionsWithoutPage(true);
         }
-        ModelResultList results = sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
+        ModelDataList results = sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
         return results.size() == 0 ? 0 : results.get(0).getInt("count(1)", 0);
     }
 
     @Override
-    public ModelResultList get() {
+    public ModelDataList get() {
         String sql = "select " + this.select + " from " + safeTable() + conditionRequest.getConditionsWithoutPage(true)
                 + conditionRequest.getGroupBy() + (conditionRequest.getPage() == null ? "" : " " + conditionRequest.getPage().toString());
         return sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
     }
 
     @Override
-    public ModelResult first() {
+    public ModelData first() {
         String sql = "select " + this.select + " from " + safeTable()
                 + conditionRequest.getConditionsWithoutPage(true) + conditionRequest.getGroupBy() + " limit 0,1";
-        ModelResultList results = sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
-        return results.size() == 0 ? new ModelResult(true) : results.get(0);
+        ModelDataList results = sqlClient.nativeQuery(buildIdentification()).executeQuery(sql);
+        return results.size() == 0 ? new ModelData(true) : results.get(0);
     }
 }
