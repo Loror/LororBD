@@ -24,7 +24,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="identification修复">
+    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="ModelResult命名中性">
+      <change afterPath="$PROJECT_DIR$/LICENSE.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,6 +65,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\work\work_idea\LororDB" />
       <recent name="C:\Users\Administrator.PC-20170306PRLG\IdeaProjects\LororDB\src\com\loror\sql" />
     </key>
   </component>
@@ -408,7 +411,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601462181352</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="ModelResult命名中性">
+      <created>1603187334574</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1603187334574</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -444,7 +454,8 @@
     <MESSAGE value="优化ModelResult" />
     <MESSAGE value="添加异常捕获机制" />
     <MESSAGE value="identification修复" />
-    <option name="LAST_COMMIT_MESSAGE" value="identification修复" />
+    <MESSAGE value="ModelResult命名中性" />
+    <option name="LAST_COMMIT_MESSAGE" value="ModelResult命名中性" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599804106526">
@@ -459,9 +470,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599804567163" />
-    <state x="560" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1600392116429">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="452" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1603187091112">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state x="452" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1549.831@0.0.1549.831" timestamp="1603187091112" />
     <state x="560" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600392116429" />
     <state x="555" y="115" key="CommitChangelistDialog2" timestamp="1601170213109">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -475,21 +487,25 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="228" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599802253661" />
-    <state width="1876" height="2" key="GridCell.Tab.0.bottom" timestamp="1601170277552">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1506" height="213" key="GridCell.Tab.0.bottom" timestamp="1603187433221">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state width="1506" height="213" key="GridCell.Tab.0.bottom/0.0.1549.831@0.0.1549.831" timestamp="1603187433221" />
     <state width="1876" height="2" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1601170277552" />
-    <state width="1876" height="2" key="GridCell.Tab.0.center" timestamp="1601170277551">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1506" height="213" key="GridCell.Tab.0.center" timestamp="1603187433221">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state width="1506" height="213" key="GridCell.Tab.0.center/0.0.1549.831@0.0.1549.831" timestamp="1603187433221" />
     <state width="1876" height="2" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1601170277551" />
-    <state width="1876" height="2" key="GridCell.Tab.0.left" timestamp="1601170277551">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1506" height="213" key="GridCell.Tab.0.left" timestamp="1603187433221">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state width="1506" height="213" key="GridCell.Tab.0.left/0.0.1549.831@0.0.1549.831" timestamp="1603187433221" />
     <state width="1876" height="2" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1601170277551" />
-    <state width="1876" height="2" key="GridCell.Tab.0.right" timestamp="1601170277552">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1506" height="213" key="GridCell.Tab.0.right" timestamp="1603187433221">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state width="1506" height="213" key="GridCell.Tab.0.right/0.0.1549.831@0.0.1549.831" timestamp="1603187433221" />
     <state width="1876" height="2" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1601170277552" />
     <state width="1876" height="342" key="GridCell.Tab.1.bottom" timestamp="1600235618484">
       <screen x="0" y="0" width="1920" height="1040" />
