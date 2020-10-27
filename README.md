@@ -80,7 +80,7 @@ try (SQLClient sqlClient = new MySQLClient("jdbc:mysql://localhost:3306/test?use
 ## sql包
 
 * 接口SQLClient
-    *接口提供了获取条件查询对象Model，native查询对象SQLDataBase，事务，各种监听，关闭连接等功能。
+    * 接口提供了获取条件查询对象Model，native查询对象SQLDataBase，事务，各种监听，关闭连接等功能。
     
 * 类Model
     * 方法where(String key, Object var) 添加and条件
@@ -114,7 +114,7 @@ try (SQLClient sqlClient = new MySQLClient("jdbc:mysql://localhost:3306/test?use
 * 类ModelDataList
     * 方法list(Class<T> type) 转换为List对象，每一项将调用ModelData的object方法生成对象
     * 方法forEach(OnForEach onForEach) 遍历所有项
-    * 方法filter(OnFilter<T> filter) 字段筛选，放回为List
+    * 方法filter(OnFilter<T> filter) 字段筛选，返回为List
     
 License
 -------
