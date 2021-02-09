@@ -24,7 +24,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="帮助文档" />
+    <list default="true" id="d8affeb0-ef93-46de-a793-62698d40096f" name="Default Changelist" comment="帮助文档">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/ColumnFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/ColumnFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/loror/sql/mysql/MySQLBuilder.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -54,7 +58,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../LororUtil" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -421,7 +425,14 @@
       <option name="project" value="LOCAL" />
       <updated>1603787018478</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="帮助文档">
+      <created>1603787495133</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1603787495133</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -474,6 +485,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="689" y="308" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599804567163" />
+    <state x="455" y="150" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1606485076548">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="455" y="150" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1549.831@0.0.1549.831" timestamp="1606485076548" />
     <state x="452" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1603187091112">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
@@ -487,9 +502,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="128" y="85" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600250133990" />
-    <state x="740" y="228" key="FileChooserDialogImpl" timestamp="1599802253661">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="597" y="182" key="FileChooserDialogImpl" timestamp="1606575132201">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state x="597" y="182" key="FileChooserDialogImpl/0.0.1549.831@0.0.1549.831" timestamp="1606575132201" />
     <state x="740" y="228" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599802253661" />
     <state width="1506" height="213" key="GridCell.Tab.0.bottom" timestamp="1603187433221">
       <screen x="0" y="0" width="1549" height="831" />

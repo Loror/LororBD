@@ -35,6 +35,17 @@ public class ColumnFilter {
     }
 
     /**
+     * 安全处理
+     */
+    public static String safeSaveValue(Object var) {
+        if (var == null) {
+            return null;
+        }
+        String value = safeValue(var);
+        return value.replace("\\", "\\\\");
+    }
+
+    /**
      * 是否不需要添加`
      */
     public static boolean isFullName(String name) {

@@ -36,7 +36,7 @@ public class MySQLBuilder {
                 String defaultValue = columnInfo.getDefaultValue();
                 if (defaultValue != null && defaultValue.length() > 0) {
                     builder.append(" DEFAULT ");
-                    builder.append(ColumnFilter.safeValue(defaultValue));
+                    builder.append(ColumnFilter.safeSaveValue(defaultValue));
                 }
                 builder.append(",");
             }
@@ -97,7 +97,7 @@ public class MySQLBuilder {
             } else {
                 builder.append(o)
                         .append(" = ")
-                        .append(ColumnFilter.safeValue(columns.get(o)))
+                        .append(ColumnFilter.safeSaveValue(columns.get(o)))
                         .append(",");
             }
         }
@@ -123,7 +123,7 @@ public class MySQLBuilder {
             } else {
                 builder.append(name)
                         .append(" = ")
-                        .append(ColumnFilter.safeValue(value))
+                        .append(ColumnFilter.safeSaveValue(value))
                         .append(",");
             }
         });
@@ -162,7 +162,7 @@ public class MySQLBuilder {
                     if (var == null) {
                         values.append("null,");
                     } else {
-                        values.append(ColumnFilter.safeValue(var))
+                        values.append(ColumnFilter.safeSaveValue(var))
                                 .append(",");
                     }
                 }
@@ -196,7 +196,7 @@ public class MySQLBuilder {
             if (value == null) {
                 values.append("null,");
             } else {
-                values.append(ColumnFilter.safeValue(value))
+                values.append(ColumnFilter.safeSaveValue(value))
                         .append(",");
             }
         });
